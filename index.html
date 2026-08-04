@@ -84,10 +84,11 @@
       font-family: Georgia, 'Times New Roman', serif;
     }
     .lede {
-      max-width: 60ch;
       margin: 22px 0 0;
+      max-width: none;
+      white-space: nowrap;
+      font-size: clamp(0.74rem, 0.95vw, 1.02rem);
       color: var(--muted);
-      font-size: 1.08rem;
       line-height: 1.8;
     }
     .grid {
@@ -142,6 +143,7 @@
       .grid { grid-template-columns: 1fr; }
       .title-cn { font-size: clamp(2rem, 11vw, 3rem); }
       .title-en { font-size: 0.9rem; }
+      .lede { font-size: 0.85rem; }
     }
   </style>
 </head>
@@ -153,21 +155,21 @@
         <span class="title-cn">看见城市的故事</span>
         <span class="title-en">See the Stories of the City</span>
       </h1>
-      <p class="lede">这里收集了本仓库里的两个城市宣传页面，点击下方入口即可预览每座城市的视觉风格。</p>
+      <p class="lede">这里收集了仓库里的两个城市宣传页面，点击下方入口即可预览每座城市的详细介绍。</p>
     </section>
     <section class="grid" aria-label="城市页面">
       <article class="card">
         <h2>南阳</h2>
-        <p>打开南阳城市宣传页，浏览瑞士风格的视觉语言和更完整的城市展示。</p>
+        <p>打开南阳城市宣传页，浏览瑞士风格的视觉设计语言和更完整的城市展示。</p>
         <a href="nanyang.html">打开南阳页面</a>
       </article>
       <article class="card alt">
         <h2>武汉</h2>
-        <p>打开武汉瑞士风格页面，看看另一套城市排版与版式表现。</p>
+        <p>打开武汉的瑞士风格设计宣传页面，看看另一个城市的亮眼之处。</p>
         <a href="wuhan-swiss-style.html">打开武汉页面</a>
       </article>
     </section>
-    <div class="footer">选择一个城市页面继续浏览。</div>
+    <div class="footer">选择一个城市继续浏览 Powered by W。</div>
   </main>
 </body>
 </html>
