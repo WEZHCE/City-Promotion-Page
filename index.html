@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Promotion Page</title>
+  <style>
+    :root {
+      --bg: #f4efe8;
+      --paper: rgba(255, 255, 255, 0.76);
+      --ink: #1f2937;
+      --muted: #5b6472;
+      --accent: #b45309;
+      --accent-2: #0f766e;
+      --line: rgba(31, 41, 55, 0.12);
+      --shadow: 0 24px 80px rgba(31, 41, 55, 0.12);
+    }
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      font-family: Georgia, 'Times New Roman', serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(180, 83, 9, 0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(15, 118, 110, 0.14), transparent 24%),
+        linear-gradient(160deg, #faf6ef 0%, #f4efe8 45%, #ecf4f1 100%);
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+    .shell {
+      width: min(980px, 100%);
+      background: var(--paper);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .hero {
+      padding: clamp(32px, 6vw, 72px);
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 12px;
+      color: var(--accent-2);
+      margin-bottom: 18px;
+    }
+    .eyebrow::before {
+      content: '';
+      width: 42px;
+      height: 1px;
+      background: currentColor;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 6vw, 5.2rem);
+      line-height: 0.94;
+      max-width: 10ch;
+    }
+    .lede {
+      max-width: 60ch;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.8;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      padding: clamp(18px, 4vw, 32px);
+    }
+    .card {
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.58);
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(180, 83, 9, 0.3);
+      box-shadow: 0 18px 40px rgba(31, 41, 55, 0.08);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.4rem;
+    }
+    .card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .card a {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: white;
+      background: linear-gradient(135deg, var(--accent), #c2410c);
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .card.alt a {
+      background: linear-gradient(135deg, var(--accent-2), #0f4c5c);
+    }
+    .footer {
+      padding: 0 32px 32px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    @media (max-width: 700px) {
+      body { padding: 16px; }
+      .grid { grid-template-columns: 1fr; }
+      h1 { max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">City Promotion Page</div>
+      <h1>Discover the city stories.</h1>
+      <p class="lede">This site collects the city promotion pages in this repository. Open a page below to preview the visual design for each city.</p>
+    </section>
+    <section class="grid" aria-label="City pages">
+      <article class="card">
+        <h2>Nanyang</h2>
+        <p>Open the Nanyang city promotion page with its Swiss-inspired visual language and rich city presentation.</p>
+        <a href="nanyang.html">Open Nanyang page</a>
+      </article>
+      <article class="card alt">
+        <h2>Wuhan</h2>
+        <p>Open the Wuhan Swiss-style page and explore the separate city layout and typography treatment.</p>
+        <a href="wuhan-swiss-style.html">Open Wuhan page</a>
+      </article>
+    </section>
+    <div class="footer">Choose a city page above to continue.</div>
+  </main>
+</body>
+</html>
