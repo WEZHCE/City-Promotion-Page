@@ -59,14 +59,25 @@
         .loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--black); z-index: 100000;
-            display: flex; align-items: center; justify-content: center;
-            transition: transform 0.8s cubic-bezier(0.7,0,0.3,1);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: transform 0.9s cubic-bezier(0.7,0,0.3,1);
+            cursor: pointer;
         }
         .loader.hidden { transform: translateY(-100%); }
         .loader-text {
             color: var(--white); font-size: clamp(24px, 5vw, 48px);
             font-weight: 100; letter-spacing: 12px; text-transform: uppercase;
             animation: loaderAnim 2s ease-in-out infinite;
+        }
+        .loader-hint {
+            position: absolute; bottom: 80px;
+            color: var(--gray-500); font-size: 12px; letter-spacing: 3px;
+            text-transform: uppercase; opacity: 0.7;
+            animation: hintPulse 1.5s ease-in-out infinite;
+        }
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.4; transform: translateY(0); }
+            50% { opacity: 0.9; transform: translateY(6px); }
         }
         @keyframes loaderAnim {
             0%, 100% { opacity: 0.3; letter-spacing: 12px; }
@@ -103,40 +114,6 @@
         }
         .nav-links a:hover::after { width: 100%; }
 
-        /* === 侧边导航 === */
-        .side-nav {
-            position: fixed; right: 40px; top: 50%; transform: translateY(-50%);
-            z-index: 999; display: flex; flex-direction: column; gap: 16px;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1);
-        }
-        .side-nav.visible { opacity: 1; pointer-events: auto; }
-        .side-nav::before {
-            content: ''; position: absolute; right: 4px; top: 0; bottom: 0;
-            width: 1px; background: var(--gray-200);
-        }
-        .side-nav-item {
-            display: flex; align-items: center; gap: 12px; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16,1,0.3,1); position: relative;
-        }
-        .side-nav-dot {
-            width: 9px; height: 9px; border: 1px solid var(--gray-400);
-            border-radius: 50%; transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-            flex-shrink: 0; background: var(--white); position: relative; z-index: 1;
-        }
-        .side-nav-label {
-            font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
-            color: var(--gray-500); opacity: 0; transform: translateX(10px);
-            transition: all 0.3s cubic-bezier(0.16,1,0.3,1); white-space: nowrap; font-weight: 500;
-        }
-        .side-nav-item:hover .side-nav-label, .side-nav-item.active .side-nav-label {
-            opacity: 1; transform: translateX(0);
-        }
-        .side-nav-item:hover .side-nav-dot, .side-nav-item.active .side-nav-dot {
-            background: var(--accent); border-color: var(--accent); transform: scale(1.4);
-            box-shadow: 0 0 0 6px rgba(230,57,70,0.15);
-        }
-
         /* === 回到顶部 === */
         .back-to-top {
             position: fixed; right: 40px; bottom: 40px; width: 48px; height: 48px;
@@ -170,28 +147,33 @@
 
         /* === 通用动画 === */
         .reveal {
-            opacity: 0; transform: translateY(50px);
-            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+            opacity: 0; transform: translateY(24px);
+            transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1);
+            will-change: opacity, transform;
         }
         .reveal.visible { opacity: 1; transform: translateY(0); }
         .reveal-left {
-            opacity: 0; transform: translateX(-60px);
-            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+            opacity: 0; transform: translateX(-30px);
+            transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1);
+            will-change: opacity, transform;
         }
         .reveal-left.visible { opacity: 1; transform: translateX(0); }
         .reveal-right {
-            opacity: 0; transform: translateX(60px);
-            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+            opacity: 0; transform: translateX(30px);
+            transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1);
+            will-change: opacity, transform;
         }
         .reveal-right.visible { opacity: 1; transform: translateX(0); }
         .reveal-scale {
-            opacity: 0; transform: scale(0.92);
-            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+            opacity: 0; transform: scale(0.96);
+            transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1);
+            will-change: opacity, transform;
         }
         .reveal-scale.visible { opacity: 1; transform: scale(1); }
         .stagger-item {
-            opacity: 0; transform: translateY(30px);
-            transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+            opacity: 0; transform: translateY(16px);
+            transition: opacity 0.3s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1);
+            will-change: opacity, transform;
         }
         .stagger-item.visible { opacity: 1; transform: translateY(0); }
 
@@ -225,6 +207,10 @@
             animation: heroSlideUp 1s cubic-bezier(0.16,1,0.3,1) forwards;
         }
         .hero-title span:nth-child(2) .hero-word { animation-delay: 0.15s; }
+        .hero.paused .hero-title .hero-word,
+        .hero.paused .hero-subtitle,
+        .hero.paused .hero-meta-item,
+        .hero.paused .scroll-hint { animation-play-state: paused; }
         @keyframes heroSlideUp { to { transform: translateY(0); } }
         .hero-title .accent-line { color: var(--accent); }
 
@@ -241,6 +227,7 @@
         .hero-meta {
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
             border-top: 1px solid var(--black); padding-top: 24px;
+            justify-items: center;
         }
         .hero-meta-item {
             padding-right: 32px; opacity: 0;
@@ -267,8 +254,8 @@
             position: relative;
         }
         .section-header {
-            display: grid; grid-template-columns: 1fr 3fr; gap: 60px;
-            margin-bottom: 80px; align-items: start;
+            display: flex; flex-direction: column; align-items: center; gap: 16px;
+            margin-bottom: 80px; text-align: center;
         }
         .section-number {
             font-size: 11px; letter-spacing: 2px; color: var(--gray-500);
@@ -284,7 +271,8 @@
         .draw-line {
             position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
             background: var(--gray-200); transform: scaleX(0); transform-origin: left;
-            transition: transform 1.2s cubic-bezier(0.16,1,0.3,1);
+            transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+            will-change: transform;
         }
         .draw-line.visible { transform: scaleX(1); }
 
@@ -295,7 +283,7 @@
         }
         .overview-card {
             background: var(--white); padding: 40px 32px;
-            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+            transition: background 0.2s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
             position: relative; overflow: hidden;
         }
         .overview-card::before {
@@ -314,26 +302,27 @@
         .overview-card .card-label {
             font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
             color: var(--gray-500); margin-bottom: 20px; font-weight: 500;
+            text-align: center;
         }
         .overview-card .card-value {
             font-size: clamp(28px, 3.5vw, 48px); font-weight: 900;
             line-height: 1.0; letter-spacing: -0.02em; margin-bottom: 12px;
+            text-align: center;
         }
-        .overview-card .card-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .overview-card .card-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; text-align: center; }
 
         /* === 历史时间线 === */
         .timeline { display: flex; flex-direction: column; }
         .timeline-item {
-            display: grid; grid-template-columns: 200px 1fr 3fr; gap: 40px;
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
             padding: 40px 0; border-bottom: 1px solid var(--gray-200);
-            align-items: start; transition: background 0.4s;
+            transition: background 0.4s; text-align: center;
         }
         .timeline-item:last-child { border-bottom: none; }
         .timeline-year {
             font-size: 24px; font-weight: 900; color: var(--accent);
             letter-spacing: -0.01em; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
         }
-        .timeline-item:hover .timeline-year { transform: translateX(12px); }
         .timeline-era { font-size: 14px; font-weight: 500; color: var(--gray-700); }
         .timeline-content h4 {
             font-size: 18px; font-weight: 700; margin-bottom: 8px;
@@ -360,33 +349,37 @@
         }
         .econ-card {
             background: var(--white); padding: 48px 40px;
-            transition: all 0.5s cubic-bezier(0.16,1,0.3,1); position: relative;
+            transition: background 0.2s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1);
+            position: relative;
         }
         .econ-card:hover { background: var(--gray-100); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
         .econ-card .card-label {
             font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
             color: var(--gray-500); margin-bottom: 16px; font-weight: 500;
+            text-align: center;
         }
         .econ-card .card-value {
             font-size: clamp(32px, 4vw, 56px); font-weight: 900;
             line-height: 1.0; letter-spacing: -0.02em; margin-bottom: 16px;
-            transition: color 0.4s;
+            transition: color 0.4s; text-align: center;
         }
         .econ-card:hover .card-value { color: var(--accent); }
         .econ-card .card-value .unit { font-size: 18px; font-weight: 400; color: var(--gray-500); }
-        .econ-card .card-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .econ-card .card-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; text-align: center; }
 
         .econ-details { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .econ-detail-block { text-align: center; }
         .econ-detail-block h3 {
             font-size: 14px; font-weight: 700; letter-spacing: 1px;
             text-transform: uppercase; margin-bottom: 24px; padding-bottom: 16px;
-            border-bottom: 2px solid var(--black);
+            border-bottom: 2px solid var(--black); text-align: center;
         }
         .econ-detail-block ul { list-style: none; }
         .econ-detail-block li {
             font-size: 14px; line-height: 2.0; color: var(--gray-700);
             padding: 10px 0; border-bottom: 1px solid var(--gray-200);
             transition: all 0.4s cubic-bezier(0.16,1,0.3,1); padding-left: 0;
+            text-align: center;
         }
         .econ-detail-block li:hover { color: var(--black); padding-left: 16px; }
         .econ-detail-block li strong { color: var(--black); font-weight: 500; }
@@ -399,7 +392,7 @@
         }
         .culture-card {
             background: var(--white); padding: 40px 32px;
-            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+            transition: background 0.2s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
         }
         .culture-card:hover { background: var(--gray-100); transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.07); }
         .culture-card .card-icon {
@@ -407,17 +400,20 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 20px; font-weight: 700; margin-bottom: 24px;
             transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+            margin-left: auto; margin-right: auto;
         }
         .culture-card:hover .card-icon {
             background: var(--accent); transform: rotate(15deg) scale(1.15);
         }
-        .culture-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
-        .culture-card p { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .culture-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 12px; text-align: center; }
+        .culture-card p { font-size: 13px; color: var(--gray-700); line-height: 1.7; text-align: center; }
 
-        .food-section { display: grid; grid-template-columns: 1fr 2fr; gap: 60px; margin-top: 80px; }
+        .food-section {
+            display: flex; flex-direction: column; align-items: center; gap: 40px; margin-top: 80px;
+        }
         .food-section h3 {
             font-size: 28px; font-weight: 900; letter-spacing: -0.01em;
-            text-transform: uppercase; line-height: 1.2; position: sticky; top: 120px;
+            text-transform: uppercase; line-height: 1.2; text-align: center;
         }
         .food-grid {
             display: grid; grid-template-columns: repeat(2, 1fr);
@@ -425,15 +421,15 @@
         }
         .food-item {
             background: var(--white); padding: 32px;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            transition: background 0.2s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
         }
         .food-item:hover { background: var(--gray-100); transform: translateY(-2px); }
         .food-item h4 {
             font-size: 16px; font-weight: 700; margin-bottom: 8px;
-            transition: color 0.3s;
+            transition: color 0.3s; text-align: center;
         }
         .food-item:hover h4 { color: var(--accent); }
-        .food-item p { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .food-item p { font-size: 13px; color: var(--gray-700); line-height: 1.7; text-align: center; }
 
         /* === 旅游 === */
         .attractions-grid {
@@ -442,19 +438,20 @@
         }
         .attraction-card {
             background: var(--white); padding: 40px 32px;
-            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+            transition: background 0.2s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
         }
         .attraction-card:hover { background: var(--gray-100); transform: translateY(-3px); }
         .attraction-card .attraction-name {
             font-size: 20px; font-weight: 700; margin-bottom: 4px;
-            transition: color 0.3s;
+            transition: color 0.3s; text-align: center;
         }
         .attraction-card:hover .attraction-name { color: var(--accent); }
         .attraction-card .attraction-tag {
             font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
             color: var(--gray-500); margin-bottom: 16px; font-weight: 500;
+            text-align: center;
         }
-        .attraction-card p { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .attraction-card p { font-size: 13px; color: var(--gray-700); line-height: 1.7; text-align: center; }
         .attraction-card.featured {
             grid-column: span 2; background: var(--black); color: var(--white);
             position: relative; overflow: hidden;
@@ -468,7 +465,7 @@
         }
         .attraction-card.featured:hover::before { transform: translate(20%, -20%) scale(2); }
         .attraction-card.featured:hover { transform: translateY(-3px); }
-        .attraction-card.featured .attraction-name { font-size: 32px; }
+        .attraction-card.featured .attraction-name { font-size: 32px; text-align: center; }
         .attraction-card.featured:hover .attraction-name { color: var(--white); }
         .attraction-card.featured .attraction-tag { color: var(--gray-500); }
         .attraction-card.featured p { color: var(--gray-300); }
@@ -480,25 +477,25 @@
         }
         .university-item {
             background: var(--white); padding: 32px 40px;
-            display: grid; grid-template-columns: 2fr 3fr 1fr;
-            gap: 40px; align-items: center;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
         }
         .university-item:hover { background: var(--gray-100); padding-left: 56px; }
         .university-item .uni-name {
-            font-size: 18px; font-weight: 700; transition: color 0.3s;
+            font-size: 18px; font-weight: 700; transition: color 0.3s; text-align: center;
         }
         .university-item:hover .uni-name { color: var(--accent); }
-        .university-item .uni-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .university-item .uni-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; text-align: center; }
         .university-item .uni-tag {
             font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
-            color: var(--gray-500); font-weight: 500; text-align: right;
+            color: var(--gray-500); font-weight: 500; text-align: center;
         }
 
         /* === 数据条 === */
         .stat-bar { display: flex; align-items: center; margin-bottom: 24px; }
         .stat-bar-label {
             width: 200px; font-size: 13px; font-weight: 500; flex-shrink: 0;
+            text-align: center;
         }
         .stat-bar-track {
             flex: 1; height: 8px; background: var(--gray-200);
@@ -506,7 +503,8 @@
         }
         .stat-bar-fill {
             height: 100%; background: var(--black); width: 0;
-            transition: width 1.5s cubic-bezier(0.16,1,0.3,1);
+            transition: width 1s cubic-bezier(0.16,1,0.3,1);
+            will-change: transform;
         }
         .stat-bar-fill.accent { background: var(--accent); }
         .stat-bar-fill::after {
@@ -520,9 +518,8 @@
             50% { box-shadow: 0 0 8px 2px rgba(230,57,70,0.4); }
         }
         .stat-bar-value {
-            width: 120px; text-align: right; font-size: 14px;
+            width: 120px; text-align: center; font-size: 14px;
             font-weight: 700; flex-shrink: 0; padding-left: 20px;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
         }
         .stat-bar.animated .stat-bar-value {
             color: var(--accent);
@@ -577,34 +574,37 @@
         }
         .enterprise-card {
             background: var(--white); padding: 32px 28px;
-            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            transition: background 0.2s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1);
         }
         .enterprise-card:hover { background: var(--gray-100); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
         .enterprise-card .ent-name {
             font-size: 16px; font-weight: 700; margin-bottom: 8px;
-            transition: color 0.3s;
+            transition: color 0.3s; text-align: center;
         }
         .enterprise-card:hover .ent-name { color: var(--accent); }
         .enterprise-card .ent-industry {
             font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
             color: var(--gray-500); margin-bottom: 12px; font-weight: 500;
+            text-align: center;
         }
-        .enterprise-card .ent-data { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .enterprise-card .ent-data { font-size: 13px; color: var(--gray-700); line-height: 1.7; text-align: center; }
 
         /* === 未来展望 === */
         .future-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .future-block { text-align: center; }
         .future-block h3 {
             font-size: 14px; font-weight: 700; letter-spacing: 1px;
             text-transform: uppercase; margin-bottom: 24px; padding-bottom: 16px;
-            border-bottom: 2px solid var(--black);
+            border-bottom: 2px solid var(--black); text-align: center;
         }
-        .future-block p { font-size: 14px; line-height: 2.0; color: var(--gray-700); margin-bottom: 20px; }
+        .future-block p { font-size: 14px; line-height: 2.0; color: var(--gray-700); margin-bottom: 20px; text-align: center; }
         .future-block ul { list-style: none; }
         .future-block li {
             font-size: 14px; line-height: 2.0; color: var(--gray-700);
             padding: 12px 0; border-bottom: 1px solid var(--gray-200);
             padding-left: 20px; position: relative;
             transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            text-align: center;
         }
         .future-block li:hover { color: var(--black); padding-left: 30px; }
         .future-block li::before {
@@ -619,6 +619,7 @@
             padding: 100px 40px; border-top: 1px solid var(--gray-200);
             border-bottom: 1px solid var(--gray-200);
             position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center;
         }
         .quote-block::before {
             content: '"'; position: absolute; top: -30px; left: 20px;
@@ -641,7 +642,7 @@
         .footer { background: var(--black); color: var(--white); padding: 60px 40px 40px; }
         .footer-grid {
             display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 60px; margin-bottom: 60px;
+            gap: 60px; margin-bottom: 60px; justify-items: center;
         }
         .footer h4 {
             font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
@@ -651,7 +652,7 @@
         .footer ul { list-style: none; }
         .footer-bottom {
             border-top: 1px solid var(--gray-700); padding-top: 24px;
-            display: flex; justify-content: space-between;
+            display: flex; justify-content: center; gap: 32px;
             font-size: 11px; color: var(--gray-500); letter-spacing: 1px;
         }
 
@@ -677,7 +678,7 @@
         /* === 响应式 === */
         @media (max-width: 1024px) {
             .hero-meta { grid-template-columns: repeat(2, 1fr); gap: 24px; }
-            .section-header { grid-template-columns: 1fr; gap: 20px; }
+            .section-header { flex-direction: column; gap: 12px; }
             .econ-grid { grid-template-columns: 1fr; }
             .culture-grid { grid-template-columns: repeat(2, 1fr); }
             .attractions-grid { grid-template-columns: repeat(2, 1fr); }
@@ -689,13 +690,12 @@
             .overview-card:nth-child(4) { grid-column: span 4; }
             .overview-card:nth-child(5) { grid-column: span 4; }
             .overview-card:nth-child(6) { grid-column: span 4; }
-            .timeline-item { grid-template-columns: 1fr; gap: 12px; }
+            .timeline-item { flex-direction: column; gap: 12px; }
             .econ-details { grid-template-columns: 1fr; gap: 40px; }
-            .food-section { grid-template-columns: 1fr; gap: 40px; }
+            .food-section { flex-direction: column; gap: 32px; }
             .future-content { grid-template-columns: 1fr; gap: 40px; }
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
             .nav-links { display: none; }
-            .side-nav { right: 20px; }
             .back-to-top { right: 20px; bottom: 20px; }
             body { cursor: auto; }
             .cursor-dot, .cursor-ring { display: none; }
@@ -712,11 +712,10 @@
             .overview-card:nth-child(1), .overview-card:nth-child(2),
             .overview-card:nth-child(3), .overview-card:nth-child(4),
             .overview-card:nth-child(5), .overview-card:nth-child(6) { grid-column: span 12; }
-            .university-item { grid-template-columns: 1fr; gap: 16px; }
+            .university-item { flex-direction: column; gap: 12px; }
             .stat-bar-label { width: 120px; }
             .footer-grid { grid-template-columns: 1fr; gap: 32px; }
             .food-grid { grid-template-columns: 1fr; }
-            .side-nav { display: none !important; }
             .hero-bg-text { display: none; }
         }
     </style>
@@ -730,9 +729,10 @@
     <!-- 背景网格 -->
     <div class="bg-grid" id="bgGrid"></div>
 
-    <!-- 加载动画 -->
+    <!-- 加载动画（点击揭开） -->
     <div class="loader" id="loader">
         <span class="loader-text">WUHAN</span>
+        <span class="loader-hint">点击揭开</span>
     </div>
 
     <!-- 滚动进度条 -->
@@ -751,33 +751,6 @@
         </ul>
     </nav>
 
-    <!-- 侧边快捷导航 -->
-    <div class="side-nav">
-        <div class="side-nav-item active" data-target="overview">
-            <div class="side-nav-dot"></div>
-            <span class="side-nav-label">概览</span>
-        </div>
-        <div class="side-nav-item" data-target="history">
-            <div class="side-nav-dot"></div>
-            <span class="side-nav-label">历史</span>
-        </div>
-        <div class="side-nav-item" data-target="economy">
-            <div class="side-nav-dot"></div>
-            <span class="side-nav-label">经济</span>
-        </div>
-        <div class="side-nav-item" data-target="culture">
-            <div class="side-nav-dot"></div>
-            <span class="side-nav-label">文化</span>
-        </div>
-        <div class="side-nav-item" data-target="tourism">
-            <div class="side-nav-dot"></div>
-            <span class="side-nav-label">旅游</span>
-        </div>
-        <div class="side-nav-item" data-target="future">
-            <div class="side-nav-dot"></div>
-            <span class="side-nav-label">未来</span>
-        </div>
-    </div>
 
     <!-- 回到顶部 -->
     <button class="back-to-top" id="backToTop" aria-label="回到顶部">
@@ -785,7 +758,7 @@
     </button>
 
     <!-- Hero -->
-    <section class="hero">
+    <section class="hero paused" id="hero">
         <div class="hero-bg-text" id="heroBgText">WUHAN</div>
         <div class="hero-title">
             <span><span class="hero-word">Wuhan</span></span>
@@ -796,7 +769,7 @@
         </p>
         <div class="hero-meta">
             <div class="hero-meta-item"><div class="label">面积</div><div class="value count-value" data-count="8569" data-suffix=" km²" data-format="comma">8,569 km²</div></div>
-            <div class="hero-meta-item"><div class="label">常住人口</div><div class="value count-value" data-count="1377" data-suffix=" 万" data-format="comma">1,377 万</div></div>
+            <div class="hero-meta-item"><div class="label">常住人口</div><div class="value count-value" data-count="1232" data-suffix=" 万" data-format="comma">1,232 万</div></div>
             <div class="hero-meta-item"><div class="label">2025年GDP</div><div class="value count-value" data-count="22147" data-suffix=" 亿元" data-format="comma">22,147 亿元</div></div>
             <div class="hero-meta-item"><div class="label">行政区划</div><div class="value count-value" data-count="13" data-suffix=" 区">13 区</div></div>
         </div>
@@ -808,7 +781,7 @@
         <div class="draw-line reveal"></div>
         <div class="section-header">
             <div class="section-number reveal">01 / 城市概览</div>
-            <h2 class="section-title reveal">武汉 <span class="accent">·</span> 基本概况</h2>
+            <h2 class="section-title reveal" style="text-align: center;">武汉 <span class="accent">·</span> 基本概况</h2>
         </div>
         <div class="overview-grid">
             <div class="overview-card stagger-item">
@@ -849,7 +822,7 @@
         <div class="draw-line reveal"></div>
         <div class="section-header">
             <div class="section-number reveal">02 / 历史沿革</div>
-            <h2 class="section-title reveal">三千年 <span class="accent">·</span> 城市文脉</h2>
+            <h2 class="section-title reveal" style="text-align: center;">三千年 <span class="accent">·</span> 城市文脉</h2>
         </div>
         <div class="timeline">
             <div class="timeline-item major stagger-item">
@@ -913,8 +886,8 @@
                 <div class="timeline-content"><h4>新冠疫情 — 英雄城市</h4><p>2020年1月23日，武汉宣布"封城"，关闭离汉通道，是人类历史上首次对千万级人口城市实施的大规模隔离措施。全国4万余名医护人员驰援武汉，建成火神山、雷神山医院及多所方舱医院。4月8日，武汉"解封"，标志着中国疫情防控取得重大战略成果。</p></div>
             </div>
             <div class="timeline-item stagger-item">
-                <div class="timeline-year">2021-2025</div><div class="timeline-era">当代</div>
-                <div class="timeline-content"><h4>疫后复苏 — 强势崛起</h4><p>武汉迅速推进复工复产，2020年GDP恢复正增长，2021-2023年实现强势复苏。2025年，武汉GDP达22,147.35亿元，同比增长5.6%，经济总量稳居全国城市前十。武汉造出全球最小原子钟，九峰山半导体基地开工。</p></div>
+                <div class="timeline-year">2021-2026</div><div class="timeline-era">当代</div>
+                <div class="timeline-content"><h4>疫后复苏 — 强势崛起</h4><p>武汉迅速推进复工复产，2020年GDP恢复正增长，2021-2025年实现强势复苏。2025年，武汉GDP达22,147亿元，同比增长5.6%，经济总量稳居全国城市前十。2026年上半年GDP达11,236亿元，增长5.7%，高技术制造业增长65.7%。</p></div>
             </div>
         </div>
     </section>
@@ -930,56 +903,54 @@
         <div class="draw-line reveal"></div>
         <div class="section-header">
             <div class="section-number reveal">03 / 经济发展</div>
-            <h2 class="section-title reveal">产业 <span class="accent">·</span> 引擎</h2>
+            <h2 class="section-title reveal" style="text-align: center;">产业 <span class="accent">·</span> 引擎</h2>
         </div>
         <div class="econ-grid">
             <div class="econ-card stagger-item">
                 <div class="card-label">2025年GDP</div>
                 <div class="card-value count-value" data-count="22147" data-format="comma"><span class="num">22,147</span><span class="unit">亿元</span></div>
-                <div class="card-desc">同比增长5.6%，经济总量稳居全国城市前十，副省级城市前五。人均GDP约15.3万元，达到中高收入经济体水平。</div>
+                <div class="card-desc">同比增长5.6%，经济总量稳居全国城市前十。三次产业结构2.2∶29.7∶68.1，服务业占比持续提升。</div>
             </div>
             <div class="econ-card stagger-item">
                 <div class="card-label">产业结构</div>
-                <div class="card-value">2.4 : 31.2 : 66.4</div>
-                <div class="card-desc">第三产业占比66.4%，服务业成为经济增长主引擎。第一产业506.82亿元，第二产业6,584.45亿元，第三产业14,014.96亿元。</div>
+                <div class="card-value">2.2 : 29.7 : 68.1</div>
+                <div class="card-desc">第三产业增加值15,076亿元，增长5.9%。高技术制造业增加值增长16.6%，占规上工业比重26.2%。</div>
             </div>
             <div class="econ-card stagger-item">
                 <div class="card-label">常住人口</div>
-                <div class="card-value count-value" data-count="1377" data-format="comma" data-suffix=" 万"><span class="num">1,377</span><span class="unit">万</span></div>
-                <div class="card-desc">城镇化率84.31%，十年人口增长25.97%。2025年居民人均可支配收入62,530元，城镇67,248元，农村35,575元。</div>
+                <div class="card-value count-value" data-count="1232" data-format="comma" data-suffix=" 万"><span class="num">1,232</span><span class="unit">万</span></div>
+                <div class="card-desc">第七次全国人口普查常住人口1,232.65万人。2025年居民人均可支配收入62,530元，增长4.7%。</div>
             </div>
         </div>
         <div class="econ-details">
             <div class="econ-detail-block reveal-left">
-                <h3>三大万亿级产业集群</h3>
+                <h3>重点产业发展</h3>
                 <ul>
-                    <li><strong>光电子信息产业</strong> — 2024年产业规模达7,566亿元，全球最大光纤光缆制造基地、光模块研发生产基地。东湖高新区光电子信息产业规模占全国约50%。</li>
-                    <li><strong>汽车制造与服务产业</strong> — 与光电子信息、大健康构成三大万亿级产业集群。2024年新能源汽车产量占比达55%。岚图、路特斯、东风猛士等品牌加速发展。</li>
-                    <li><strong>生命健康产业（大健康）</strong> — 2024年总规模达5,546亿元，位列全国生物医药产业园第6位。引进培育联影医疗、药明康德、国药等企业。</li>
+                    <li><strong>高技术制造业</strong> — 2025年增加值增长16.6%，占规上工业比重26.2%，对规上工业增速贡献率达58.2%</li>
+                    <li><strong>计算机、通信和其他电子设备制造业</strong> — 增长18.9%，平板电脑、集成电路圆片、民用无人机产量分别增长43.2%、38.0%、33.2%</li>
+                    <li><strong>汽车制造业</strong> — 增长11.7%，新能源汽车产量增长40.2%。岚图、路特斯等品牌加速发展</li>
                 </ul>
             </div>
             <div class="econ-detail-block reveal-right">
-                <h3>其他优势产业</h3>
+                <h3>服务业与投资</h3>
                 <ul>
-                    <li><strong>软件产业</strong> — 2024年规模突破3,500亿元，增速连续三年居全国软件名城之首</li>
-                    <li><strong>智能制造/高端装备</strong> — 节能环保、高端装备、新材料等优势产业过五千亿元级</li>
-                    <li><strong>人工智能</strong> — 1,000+人工智能相关企业，AI产业快速发展</li>
-                    <li><strong>商业航天</strong> — 国家航天产业基地（武汉新洲）加快建设</li>
-                    <li><strong>集成电路</strong> — 长江存储、新思科技等龙头带动全产业链</li>
-                    <li><strong>数字经济</strong> — 占GDP比重达50%，近三年每年提高1个百分点</li>
+                    <li><strong>规模以上服务业</strong> — 1-11月营业收入同比增长11.9%，信息传输、软件和信息技术服务业增长11.2%</li>
+                    <li><strong>固定资产投资</strong> — 2025年增长2.0%，其中工业投资增长9.7%，制造业投资增长10.1%</li>
+                    <li><strong>外贸进出口</strong> — 2025年进出口总额4,548.5亿元，增长12.7%。2026年上半年增长21.2%</li>
+                    <li><strong>金融市场</strong> — 2025年末金融机构本外币存款43,046亿元，贷款52,625亿元</li>
                 </ul>
             </div>
         </div>
         <div style="margin-top: 80px;">
             <div class="section-header" style="margin-bottom: 40px;">
                 <div class="section-number reveal"></div>
-                <h2 class="section-title reveal" style="font-size: 32px;">三大 <span class="accent">·</span> 国家级开发区</h2>
+                <h2 class="section-title reveal" style="font-size: 32px; text-align: center;">三大 <span class="accent">·</span> 国家级开发区</h2>
             </div>
             <div class="econ-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="econ-card stagger-item">
                     <div class="card-label">东湖新技术开发区（光谷）</div>
-                    <div class="card-value">3,200<span class="unit">亿元</span></div>
-                    <div class="card-desc">2024年GDP突破3,200亿元，同比增长7.1%。国家高新区综合排名第6位，企业总数超16万家。光电子信息、集成电路、量子信息、人形机器人等未来产业。工业增加值增速达17.5%，对全市工业增加值贡献率近60%。</div>
+                    <div class="card-value count-value" data-count="3200" data-format="comma"><span class="num">3,200</span><span class="unit">亿元</span></div>
+                    <div class="card-desc">2025年GDP突破3,200亿元。国家高新区综合排名前列，企业总数超16万家。2026年上半年计算机、通信和其他电子设备制造业增长90.8%。</div>
                 </div>
                 <div class="econ-card stagger-item">
                     <div class="card-label">武汉经济技术开发区（车谷）</div>
@@ -996,30 +967,30 @@
         <div style="margin-top: 80px;">
             <div class="section-header" style="margin-bottom: 40px;">
                 <div class="section-number reveal"></div>
-                <h2 class="section-title reveal" style="font-size: 32px;">龙头 <span class="accent">·</span> 企业</h2>
+                <h2 class="section-title reveal" style="font-size: 32px; text-align: center;">龙头 <span class="accent">·</span> 企业</h2>
             </div>
             <div class="enterprise-grid">
-                <div class="enterprise-card stagger-item"><div class="ent-name">东风汽车集团</div><div class="ent-industry">汽车制造</div><div class="ent-data">世界500强企业，总部武汉经开区。2024年营收超4,000亿元，中国四大汽车集团之一。</div></div>
-                <div class="enterprise-card stagger-item"><div class="ent-name">中国信科集团</div><div class="ent-industry">信息通信</div><div class="ent-data">央企，信息通信领域龙头。在5G、光通信、芯片等领域技术领先。</div></div>
-                <div class="enterprise-card stagger-item"><div class="ent-name">长江存储</div><div class="ent-industry">半导体存储</div><div class="ent-data">2025年前三季度营收约320.8亿元，同比增长97.8%。全球NAND市场份额提升至13%。</div></div>
-                <div class="enterprise-card stagger-item"><div class="ent-name">中建三局</div><div class="ent-industry">建筑工程</div><div class="ent-data">2024年营收4,481.44亿元，湖北企业100强榜首。火神山、雷神山医院建设者。</div></div>
-                <div class="enterprise-card stagger-item"><div class="ent-name">中国宝武武汉总部</div><div class="ent-industry">钢铁制造</div><div class="ent-data">2024年营收1,718亿元。宝钢与武钢联合重组后的区域总部。</div></div>
-                <div class="enterprise-card stagger-item"><div class="ent-name">三峡集团</div><div class="ent-industry">清洁能源</div><div class="ent-data">总部迁至武汉，资产总额1.48万亿元。全球最大的水电开发企业。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">东风汽车集团</div><div class="ent-industry">汽车制造</div><div class="ent-data">世界500强企业，总部武汉经开区。2025年汽车制造业增加值增长11.7%，新能源汽车产量增长40.2%。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">中国信科集团</div><div class="ent-industry">信息通信</div><div class="ent-data">央企，信息通信领域龙头。在5G/6G、光通信、芯片等领域技术领先。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">长江存储</div><div class="ent-industry">半导体存储</div><div class="ent-data">2026年上半年集成电路圆片产量增长38.0%，全球NAND市场份额持续提升。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">中建三局</div><div class="ent-industry">建筑工程</div><div class="ent-data">湖北企业100强榜首。火神山、雷神山医院建设者，"中国速度"的创造者。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">中国宝武武汉总部</div><div class="ent-industry">钢铁制造</div><div class="ent-data">宝钢与武钢联合重组后的区域总部，中国最大的现代化钢铁联合企业。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">三峡集团</div><div class="ent-industry">清洁能源</div><div class="ent-data">总部迁至武汉。全球最大的水电开发企业、中国最大的清洁能源集团。</div></div>
                 <div class="enterprise-card stagger-item"><div class="ent-name">九州通医药</div><div class="ent-industry">医药流通</div><div class="ent-data">湖北企业100强前五，中国最大的民营医药流通企业之一。</div></div>
-                <div class="enterprise-card stagger-item"><div class="ent-name">武汉科技创新</div><div class="ent-industry">创新生态</div><div class="ent-data">2024年高新技术企业突破1.6万家，民营企业突破102.5万家。全球创新指数排名全球第13位。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">武汉科技创新</div><div class="ent-industry">创新生态</div><div class="ent-data">2026年上半年高技术制造业增加值增长65.7%，对规上工业增长贡献率达98.5%。</div></div>
             </div>
         </div>
         <div style="margin-top: 80px;">
             <div class="section-header" style="margin-bottom: 40px;">
                 <div class="section-number reveal"></div>
-                <h2 class="section-title reveal" style="font-size: 32px;">创新 <span class="accent">·</span> 指标</h2>
+                <h2 class="section-title reveal" style="font-size: 32px; text-align: center;">创新 <span class="accent">·</span> 指标</h2>
             </div>
-            <div class="stat-bar reveal"><div class="stat-bar-label">全球创新指数排名</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="87"></div></div><div class="stat-bar-value" data-count="13" data-suffix="位" data-prefix="全球第">全球第13位</div></div>
-            <div class="stat-bar reveal"><div class="stat-bar-label">高新技术企业</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="90"></div></div><div class="stat-bar-value" data-count="16000" data-suffix="+" data-format="comma">16,000+</div></div>
-            <div class="stat-bar reveal"><div class="stat-bar-label">世界500强在汉</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="62"></div></div><div class="stat-bar-value" data-count="310" data-suffix="家">310家</div></div>
-            <div class="stat-bar reveal"><div class="stat-bar-label">技术合同成交额</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="78"></div></div><div class="stat-bar-value" data-text="持续增长">持续增长</div></div>
-            <div class="stat-bar reveal"><div class="stat-bar-label">数字经济占比</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="50"></div></div><div class="stat-bar-value" data-count="50" data-suffix="%">50%</div></div>
-            <div class="stat-bar reveal"><div class="stat-bar-label">民营企业数量</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="85"></div></div><div class="stat-bar-value" data-count="102.5" data-suffix="万" data-decimals="1">102.5万</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">高技术制造业增速</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="83"></div></div><div class="stat-bar-value" data-count="16.6" data-suffix="%" data-decimals="1">16.6%</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">规上工业增加值</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="62"></div></div><div class="stat-bar-value" data-count="6.2" data-suffix="%" data-decimals="1">6.2%</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">外贸进出口增速</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="63"></div></div><div class="stat-bar-value" data-count="12.7" data-suffix="%" data-decimals="1">12.7%</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">居民收入增速</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="47"></div></div><div class="stat-bar-value" data-count="4.7" data-suffix="%" data-decimals="1">4.7%</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">社零总额增速</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="45"></div></div><div class="stat-bar-value" data-count="4.5" data-suffix="%" data-decimals="1">4.5%</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">服务业增速</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="59"></div></div><div class="stat-bar-value" data-count="5.9" data-suffix="%" data-decimals="1">5.9%</div></div>
         </div>
     </section>
 
@@ -1028,7 +999,7 @@
         <div class="draw-line reveal"></div>
         <div class="section-header">
             <div class="section-number reveal">04 / 文化美食</div>
-            <h2 class="section-title reveal">味道 <span class="accent">·</span> 武汉</h2>
+            <h2 class="section-title reveal" style="text-align: center;">味道 <span class="accent">·</span> 武汉</h2>
         </div>
         <div class="culture-grid">
             <div class="culture-card stagger-item"><div class="card-icon">荆</div><h4>荆楚文化</h4><p>武汉是荆楚文化的核心发祥地。湖北省博物馆藏有曾侯乙编钟、越王勾践剑、云梦睡虎地秦简等国宝级文物。</p></div>
@@ -1056,7 +1027,7 @@
         <div style="margin-top: 80px;">
             <div class="section-header" style="margin-bottom: 40px;">
                 <div class="section-number reveal"></div>
-                <h2 class="section-title reveal" style="font-size: 32px;">科教 <span class="accent">·</span> 重镇</h2>
+                <h2 class="section-title reveal" style="font-size: 32px; text-align: center;">科教 <span class="accent">·</span> 重镇</h2>
             </div>
             <p class="reveal" style="font-size:14px;color:var(--gray-700);line-height:1.8;margin-bottom:40px;max-width:800px;">
                 武汉是中国重要的科教中心城市，拥有高等院校83所，在校大学生超过130万人，是全球大学生数量最多的城市之一。
@@ -1078,7 +1049,7 @@
         <div class="draw-line reveal"></div>
         <div class="section-header">
             <div class="section-number reveal">05 / 旅游资源</div>
-            <h2 class="section-title reveal">探索 <span class="accent">·</span> 江城</h2>
+            <h2 class="section-title reveal" style="text-align: center;">探索 <span class="accent">·</span> 江城</h2>
         </div>
         <div class="attractions-grid">
             <div class="attraction-card featured stagger-item"><div class="attraction-name">黄鹤楼</div><div class="attraction-tag">5A级景区 · 江南三大名楼</div><p>"诗词绝句中的江南名楼"，与岳阳楼、滕王阁并称"江南三大名楼"。始建于三国时期，因崔颢"昔人已乘黄鹤去，此地空余黄鹤楼"的千古绝唱而闻名于世。现楼为1985年重建，高51.4米，飞檐五层，攒尖楼顶，金色琉璃瓦屋面。登楼远眺，长江、龟山、蛇山、武汉三镇尽收眼底。"夜上黄鹤楼"是全新夜游体验，现代光影技术与古典建筑完美融合。</p></div>
@@ -1097,7 +1068,7 @@
         <div style="margin-top: 80px;">
             <div class="section-header" style="margin-bottom: 40px;">
                 <div class="section-number reveal"></div>
-                <h2 class="section-title reveal" style="font-size: 32px;">博物馆 <span class="accent">·</span> 与 · 文化场馆</h2>
+                <h2 class="section-title reveal" style="font-size: 32px; text-align: center;">博物馆 <span class="accent">·</span> 与 · 文化场馆</h2>
             </div>
             <div class="econ-details">
                 <div class="econ-detail-block reveal-left">
@@ -1128,7 +1099,7 @@
         <div class="draw-line reveal"></div>
         <div class="section-header">
             <div class="section-number reveal">06 / 未来展望</div>
-            <h2 class="section-title reveal">迈向 <span class="accent">·</span> 世界</h2>
+            <h2 class="section-title reveal" style="text-align: center;">迈向 <span class="accent">·</span> 世界</h2>
         </div>
         <div class="future-content">
             <div class="future-block reveal-left">
@@ -1161,13 +1132,13 @@
         <div style="margin-top: 80px;">
             <div class="section-header" style="margin-bottom: 40px;">
                 <div class="section-number reveal"></div>
-                <h2 class="section-title reveal" style="font-size: 32px;">2025年 <span class="accent">·</span> 最新数据</h2>
+                <h2 class="section-title reveal" style="font-size: 32px; text-align: center;">2026年上半年 <span class="accent">·</span> 最新运行数据</h2>
             </div>
             <div class="econ-grid" style="grid-template-columns: repeat(4, 1fr);">
-                <div class="econ-card stagger-item"><div class="card-label">2025年GDP</div><div class="card-value count-value" data-count="22147" data-format="comma"><span class="num">22,147</span><span class="unit">亿元</span></div><div class="card-desc">同比增长5.6%，经济总量稳居全国城市前十</div></div>
-                <div class="econ-card stagger-item"><div class="card-label">社会消费品零售总额</div><div class="card-value count-value" data-count="9013" data-format="comma"><span class="num">9,013</span><span class="unit">亿元</span></div><div class="card-desc">同比增长4.5%，内需潜力持续释放</div></div>
-                <div class="econ-card stagger-item"><div class="card-label">进出口总额</div><div class="card-value count-value" data-count="4548" data-format="comma"><span class="num">4,548</span><span class="unit">亿元</span></div><div class="card-desc">同比增长12.7%，开放型经济水平提升</div></div>
-                <div class="econ-card stagger-item"><div class="card-label">居民人均可支配收入</div><div class="card-value count-value" data-count="62530" data-format="comma"><span class="num">62,530</span><span class="unit">元</span></div><div class="card-desc">城镇67,248元，农村35,575元，城乡差距持续缩小</div></div>
+                <div class="econ-card stagger-item"><div class="card-label">2026上半年GDP</div><div class="card-value count-value" data-count="11236" data-format="comma"><span class="num">11,236</span><span class="unit">亿元</span></div><div class="card-desc">同比增长5.7%，经济运行总体平稳</div></div>
+                <div class="econ-card stagger-item"><div class="card-label">规模以上工业</div><div class="card-value count-value" data-count="15.4" data-suffix="%" data-decimals="1"><span class="num">15.4</span><span class="unit">%</span></div><div class="card-desc">增加值同比增长15.4%，增速亮眼</div></div>
+                <div class="econ-card stagger-item"><div class="card-label">2026上半年进出口</div><div class="card-value count-value" data-count="2593" data-format="comma"><span class="num">2,593</span><span class="unit">亿元</span></div><div class="card-desc">同比增长21.2%，外贸快速增长</div></div>
+                <div class="econ-card stagger-item"><div class="card-label">2026上半年收入</div><div class="card-value count-value" data-count="34181" data-format="comma"><span class="num">34,181</span><span class="unit">元</span></div><div class="card-desc">居民人均可支配收入增长5.0%</div></div>
             </div>
         </div>
     </section>
@@ -1184,15 +1155,20 @@
             <div><h4>Wuhan 武汉</h4><p>中国中部地区唯一的副省级市，湖北省省会，国家历史文化名城，国家中心城市，长江经济带核心城市。长江与汉江交汇处，武汉三镇共同构成了这座"九省通衢"的千年古都。</p></div>
             <div><h4>联系方式</h4><ul><li>武汉市人民政府</li><li>地址：武汉市江岸区沿江大道188号</li><li>官网：www.wuhan.gov.cn</li><li>邮编：430014</li></ul></div>
             <div><h4>快速链接</h4><ul><li>投资武汉</li><li>旅游服务</li><li>人才政策</li><li>科技创新</li></ul></div>
-            <div><h4>数据说明</h4><p>本页面数据来源于武汉市人民政府官网、武汉市统计局、湖北省统计局等权威机构发布的2024-2025年最新统计公报和官方信息。</p></div>
+            <div><h4>数据说明</h4><p>本页面2025年数据来源于武汉市统计局《2025年武汉市经济运行情况》（2026年1月28日发布）；2026年上半年数据来源于《2026年上半年武汉市经济运行情况》（2026年7月23日发布）。人口数据来源于第七次全国人口普查公报。</p></div>
         </div>
-        <div class="footer-bottom"><span>WUHAN — 武汉</span><span>资料截至2025年 · 内容仅供参考</span></div>
+        <div class="footer-bottom"><span>WUHAN — 武汉</span><span>数据来源：武汉市统计局 · 2026年8月</span></div>
     </footer>
 
     <script>
-        // === 加载动画 ===
-        window.addEventListener('load', () => {
-            setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 600);
+        // === 封幕点击揭开 ===
+        const loader = document.getElementById('loader');
+        const hero = document.getElementById('hero');
+        document.body.style.overflow = 'hidden';
+        loader.addEventListener('click', () => {
+            loader.classList.add('hidden');
+            hero.classList.remove('paused');
+            document.body.style.overflow = '';
         });
 
         // === 滚动进度条 ===
@@ -1237,31 +1213,14 @@
         animateCursor();
 
         // 光标悬停效果
-        const hoverElements = document.querySelectorAll('a, button, .side-nav-item, .overview-card, .econ-card, .culture-card, .food-item, .attraction-card, .enterprise-card, .university-item, .timeline-item, .footer a');
+        const hoverElements = document.querySelectorAll('a, button, .overview-card, .econ-card, .culture-card, .food-item, .attraction-card, .enterprise-card, .university-item, .timeline-item, .footer a');
         hoverElements.forEach(el => {
             el.addEventListener('mouseenter', () => { cursorRing.classList.add('hover'); cursorDot.classList.add('hover'); });
             el.addEventListener('mouseleave', () => { cursorRing.classList.remove('hover'); cursorDot.classList.remove('hover'); });
         });
 
-        // === 侧边导航显隐控制 ===
-        const sideNav = document.querySelector('.side-nav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > window.innerHeight * 0.6) {
-                sideNav.classList.add('visible');
-            } else {
-                sideNav.classList.remove('visible');
-            }
-        });
-        const sideNavItems = document.querySelectorAll('.side-nav-item');
-        sideNavItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const section = document.getElementById(item.getAttribute('data-target'));
-                if (section) section.scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-
         // === Intersection Observer 滚动动画 ===
-        const observerOptions = { threshold: 0.08, rootMargin: '0px 0px -60px 0px' };
+        const observerOptions = { threshold: 0.03, rootMargin: '0px 0px -20px 0px' };
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -1278,20 +1237,8 @@
 
         // === Stagger延迟 ===
         document.querySelectorAll('.stagger-item').forEach((el, i) => {
-            el.style.transitionDelay = Math.min(i * 0.04, 0.3) + 's';
+            el.style.transitionDelay = Math.min(i * 0.02, 0.12) + 's';
         });
-
-        // === 侧边导航高亮 ===
-        const sections = document.querySelectorAll('.section');
-        const sideNavObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const id = entry.target.getAttribute('id');
-                    sideNavItems.forEach(item => item.classList.toggle('active', item.getAttribute('data-target') === id));
-                }
-            });
-        }, { threshold: 0.25 });
-        sections.forEach(section => sideNavObserver.observe(section));
 
         // === 数据条动画 + 数字滚动 ===
         const statBarObserver = new IntersectionObserver((entries) => {
@@ -1312,7 +1259,7 @@
                         const prefix = valueEl.dataset.prefix || '';
                         const decimals = parseInt(valueEl.dataset.decimals) || 0;
                         const format = valueEl.dataset.format || '';
-                        const duration = 2000;
+                        const duration = 1200;
                         const startTime = performance.now();
                         valueEl.classList.add('count-up', 'counting');
                         function updateCounter(currentTime) {
@@ -1354,8 +1301,8 @@
             if (bgGrid) bgGrid.style.transform = `translateY(${scrolled * 0.05}px)`;
         });
 
-        // === 磁性悬停效果 ===
-        document.querySelectorAll('.overview-card, .econ-card, .culture-card, .enterprise-card').forEach(card => {
+        // === 磁性悬停效果（仅限enterprise-card） ===
+        document.querySelectorAll('.enterprise-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
@@ -1488,7 +1435,7 @@
                 const format = el.dataset.format || '';
                 const suffix = el.dataset.suffix || '';
                 const decimals = parseInt(el.dataset.decimals) || 0;
-                animateCountUp(el, target, { duration: 1800, decimals, format, suffix });
+                        animateCountUp(el, target, { duration: 1200, decimals, format, suffix });
             });
         }, 1200);
 
@@ -1501,7 +1448,7 @@
                     const format = entry.target.dataset.format || '';
                     const suffix = entry.target.dataset.suffix || '';
                     const decimals = parseInt(entry.target.dataset.decimals) || 0;
-                    animateCountUp(entry.target, target, { duration: 2000, decimals, format, suffix });
+                        animateCountUp(entry.target, target, { duration: 1200, decimals, format, suffix });
                 }
             });
         }, { threshold: 0.3 });
