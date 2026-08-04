@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WUHAN — 武汉</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@100;300;400;500;700;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #000000;
+            --white: #FFFFFF;
+            --gray-100: #F5F5F5;
+            --gray-200: #E5E5E5;
+            --gray-300: #D4D4D4;
+            --gray-500: #737373;
+            --gray-700: #404040;
+            --accent: #E63946;
+            --accent-dark: #C62B36;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans SC', 'Helvetica Neue', Arial, sans-serif;
+            font-weight: 400; color: var(--black); background-color: var(--white);
+            line-height: 1.7; font-size: 15px; -webkit-font-smoothing: antialiased;
+            overflow-x: hidden; cursor: none;
+        }
+
+        /* === 自定义光标 === */
+        .cursor-dot {
+            position: fixed; top: 0; left: 0; width: 8px; height: 8px;
+            background: var(--accent); border-radius: 50%; pointer-events: none;
+            z-index: 100000; transition: transform 0.15s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
+            mix-blend-mode: difference;
+        }
+        .cursor-ring {
+            position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+            border: 1px solid var(--accent); border-radius: 50%; pointer-events: none;
+            z-index: 99999; transition: width 0.4s cubic-bezier(0.16,1,0.3,1), height 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.3s;
+            opacity: 0.5;
+        }
+        .cursor-ring.hover {
+            width: 64px; height: 64px; opacity: 0.8; border-width: 2px;
+        }
+        .cursor-dot.hover { transform: scale(0); }
+
+        /* === 滚动进度条 === */
+        .scroll-progress {
+            position: fixed; top: 0; left: 0; height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+            z-index: 10001; transition: width 0.1s linear;
+        }
+
+        /* === 页面加载动画 === */
+        .loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--black); z-index: 100000;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.7,0,0.3,1);
+        }
+        .loader.hidden { transform: translateY(-100%); }
+        .loader-text {
+            color: var(--white); font-size: clamp(24px, 5vw, 48px);
+            font-weight: 100; letter-spacing: 12px; text-transform: uppercase;
+            animation: loaderAnim 2s ease-in-out infinite;
+        }
+        @keyframes loaderAnim {
+            0%, 100% { opacity: 0.3; letter-spacing: 12px; }
+            50% { opacity: 1; letter-spacing: 24px; }
+        }
+
+        /* === 导航 === */
+        .nav {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); color: var(--white);
+            padding: 16px 40px; display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .nav.scrolled { padding: 10px 40px; background: rgba(0,0,0,0.95); }
+        .nav-brand {
+            font-size: 14px; font-weight: 700; letter-spacing: 3px;
+            text-transform: uppercase; position: relative; overflow: hidden;
+        }
+        .nav-brand::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px;
+            background: var(--accent); transform: translateX(-101%); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .nav-brand:hover::after { transform: translateX(0); }
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+        .nav-links a {
+            color: var(--white); text-decoration: none; font-size: 11px;
+            letter-spacing: 1.5px; text-transform: uppercase; font-weight: 400;
+            position: relative; padding: 4px 0;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px;
+            background: var(--accent); transition: width 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        /* === 侧边导航 === */
+        .side-nav {
+            position: fixed; right: 40px; top: 50%; transform: translateY(-50%);
+            z-index: 999; display: flex; flex-direction: column; gap: 16px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .side-nav.visible { opacity: 1; pointer-events: auto; }
+        .side-nav::before {
+            content: ''; position: absolute; right: 4px; top: 0; bottom: 0;
+            width: 1px; background: var(--gray-200);
+        }
+        .side-nav-item {
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1); position: relative;
+        }
+        .side-nav-dot {
+            width: 9px; height: 9px; border: 1px solid var(--gray-400);
+            border-radius: 50%; transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+            flex-shrink: 0; background: var(--white); position: relative; z-index: 1;
+        }
+        .side-nav-label {
+            font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--gray-500); opacity: 0; transform: translateX(10px);
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1); white-space: nowrap; font-weight: 500;
+        }
+        .side-nav-item:hover .side-nav-label, .side-nav-item.active .side-nav-label {
+            opacity: 1; transform: translateX(0);
+        }
+        .side-nav-item:hover .side-nav-dot, .side-nav-item.active .side-nav-dot {
+            background: var(--accent); border-color: var(--accent); transform: scale(1.4);
+            box-shadow: 0 0 0 6px rgba(230,57,70,0.15);
+        }
+
+        /* === 回到顶部 === */
+        .back-to-top {
+            position: fixed; right: 40px; bottom: 40px; width: 48px; height: 48px;
+            background: var(--black); color: var(--white); border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transform: translateY(20px) scale(0.8);
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1); z-index: 999;
+        }
+        .back-to-top.visible { opacity: 1; transform: translateY(0) scale(1); }
+        .back-to-top:hover { background: var(--accent); transform: translateY(-4px) scale(1.05); box-shadow: 0 8px 32px rgba(230,57,70,0.3); }
+
+        /* === 滚动提示 === */
+        .scroll-hint {
+            position: absolute; bottom: 40px; right: 40px;
+            display: flex; align-items: center; gap: 12px;
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--gray-500); opacity: 0;
+            animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) 1.2s forwards;
+        }
+        .scroll-hint-line {
+            width: 40px; height: 1px; background: var(--gray-300);
+            position: relative; overflow: hidden;
+        }
+        .scroll-hint-line::after {
+            content: ''; position: absolute; width: 100%; height: 100%;
+            background: var(--black); animation: scrollLine 2s ease-in-out infinite;
+        }
+        @keyframes scrollLine {
+            0% { transform: translateX(-100%); } 50% { transform: translateX(0); } 100% { transform: translateX(100%); }
+        }
+
+        /* === 通用动画 === */
+        .reveal {
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-left {
+            opacity: 0; transform: translateX(-60px);
+            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal-left.visible { opacity: 1; transform: translateX(0); }
+        .reveal-right {
+            opacity: 0; transform: translateX(60px);
+            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal-right.visible { opacity: 1; transform: translateX(0); }
+        .reveal-scale {
+            opacity: 0; transform: scale(0.92);
+            transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal-scale.visible { opacity: 1; transform: scale(1); }
+        .stagger-item {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+        }
+        .stagger-item.visible { opacity: 1; transform: translateY(0); }
+
+        /* === 字符分解动画 === */
+        .char-reveal span {
+            display: inline-block; opacity: 0; transform: translateY(20px) rotateX(-40deg);
+            transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .char-reveal.visible span { opacity: 1; transform: translateY(0) rotateX(0); }
+
+        /* === Hero === */
+        .hero {
+            min-height: 100vh; display: flex; flex-direction: column;
+            justify-content: flex-end; padding: 120px 40px 80px;
+            position: relative; overflow: hidden;
+        }
+        .hero-bg-text {
+            position: absolute; top: 5%; left: -5%;
+            font-size: clamp(150px, 25vw, 450px); font-weight: 900;
+            color: transparent; -webkit-text-stroke: 1px var(--gray-200);
+            line-height: 1; pointer-events: none; user-select: none;
+            will-change: transform;
+        }
+        .hero-title {
+            font-size: clamp(80px, 15vw, 220px); font-weight: 900;
+            line-height: 0.85; letter-spacing: -0.03em; margin-bottom: 40px; position: relative;
+        }
+        .hero-title span { display: block; overflow: hidden; }
+        .hero-title .hero-word {
+            display: inline-block; transform: translateY(110%);
+            animation: heroSlideUp 1s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .hero-title span:nth-child(2) .hero-word { animation-delay: 0.15s; }
+        @keyframes heroSlideUp { to { transform: translateY(0); } }
+        .hero-title .accent-line { color: var(--accent); }
+
+        .hero-subtitle {
+            font-size: 18px; font-weight: 300; max-width: 600px;
+            color: var(--gray-700); line-height: 1.8; margin-bottom: 60px;
+            opacity: 0; animation: fadeInUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.5s forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .hero-meta {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+            border-top: 1px solid var(--black); padding-top: 24px;
+        }
+        .hero-meta-item {
+            padding-right: 32px; opacity: 0;
+            animation: fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        .hero-meta-item:nth-child(1) { animation-delay: 0.6s; }
+        .hero-meta-item:nth-child(2) { animation-delay: 0.7s; }
+        .hero-meta-item:nth-child(3) { animation-delay: 0.8s; }
+        .hero-meta-item:nth-child(4) { animation-delay: 0.9s; }
+        .hero-meta-item .label {
+            font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--gray-500); margin-bottom: 8px; font-weight: 500;
+        }
+        .hero-meta-item .value {
+            font-size: 22px; font-weight: 700; letter-spacing: -0.01em;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .hero-meta-item .value.counting { color: var(--accent); }
+        .hero-meta-item .value.counted { color: var(--black); }
+
+        /* === 通用区块 === */
+        .section {
+            padding: 120px 40px; border-top: 1px solid var(--gray-200);
+            position: relative;
+        }
+        .section-header {
+            display: grid; grid-template-columns: 1fr 3fr; gap: 60px;
+            margin-bottom: 80px; align-items: start;
+        }
+        .section-number {
+            font-size: 11px; letter-spacing: 2px; color: var(--gray-500);
+            font-weight: 500; text-transform: uppercase;
+        }
+        .section-title {
+            font-size: clamp(36px, 5vw, 72px); font-weight: 900;
+            line-height: 1.0; letter-spacing: -0.02em; text-transform: uppercase;
+        }
+        .section-title .accent { color: var(--accent); }
+
+        /* === 装饰线动画 === */
+        .draw-line {
+            position: absolute; top: 0; left: 40px; right: 40px; height: 1px;
+            background: var(--gray-200); transform: scaleX(0); transform-origin: left;
+            transition: transform 1.2s cubic-bezier(0.16,1,0.3,1);
+        }
+        .draw-line.visible { transform: scaleX(1); }
+
+        /* === 城市概览 === */
+        .overview-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300);
+        }
+        .overview-card {
+            background: var(--white); padding: 40px 32px;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+            position: relative; overflow: hidden;
+        }
+        .overview-card::before {
+            content: ''; position: absolute; top: 0; left: 0;
+            width: 3px; height: 0; background: var(--accent);
+            transition: height 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .overview-card:hover::before { height: 100%; }
+        .overview-card:hover { background: var(--gray-100); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+        .overview-card:nth-child(1) { grid-column: span 6; }
+        .overview-card:nth-child(2) { grid-column: span 3; }
+        .overview-card:nth-child(3) { grid-column: span 3; }
+        .overview-card:nth-child(4) { grid-column: span 4; }
+        .overview-card:nth-child(5) { grid-column: span 4; }
+        .overview-card:nth-child(6) { grid-column: span 4; }
+        .overview-card .card-label {
+            font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--gray-500); margin-bottom: 20px; font-weight: 500;
+        }
+        .overview-card .card-value {
+            font-size: clamp(28px, 3.5vw, 48px); font-weight: 900;
+            line-height: 1.0; letter-spacing: -0.02em; margin-bottom: 12px;
+        }
+        .overview-card .card-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+
+        /* === 历史时间线 === */
+        .timeline { display: flex; flex-direction: column; }
+        .timeline-item {
+            display: grid; grid-template-columns: 200px 1fr 3fr; gap: 40px;
+            padding: 40px 0; border-bottom: 1px solid var(--gray-200);
+            align-items: start; transition: background 0.4s;
+        }
+        .timeline-item:last-child { border-bottom: none; }
+        .timeline-year {
+            font-size: 24px; font-weight: 900; color: var(--accent);
+            letter-spacing: -0.01em; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .timeline-item:hover .timeline-year { transform: translateX(12px); }
+        .timeline-era { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+        .timeline-content h4 {
+            font-size: 18px; font-weight: 700; margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+        .timeline-item:hover .timeline-content h4 { color: var(--accent); }
+        .timeline-content p { font-size: 14px; color: var(--gray-700); line-height: 1.8; }
+        .timeline-item.major {
+            background: var(--gray-100); margin: 0 -40px; padding: 40px;
+            border-bottom: none; position: relative;
+        }
+        .timeline-item.major::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+            width: 3px; background: var(--accent);
+            animation: lineGrow 0.6s cubic-bezier(0.16,1,0.3,1) forwards;
+        }
+        @keyframes lineGrow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+        /* === 经济 === */
+        .econ-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300);
+            margin-bottom: 80px;
+        }
+        .econ-card {
+            background: var(--white); padding: 48px 40px;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1); position: relative;
+        }
+        .econ-card:hover { background: var(--gray-100); transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.05); }
+        .econ-card .card-label {
+            font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--gray-500); margin-bottom: 16px; font-weight: 500;
+        }
+        .econ-card .card-value {
+            font-size: clamp(32px, 4vw, 56px); font-weight: 900;
+            line-height: 1.0; letter-spacing: -0.02em; margin-bottom: 16px;
+            transition: color 0.4s;
+        }
+        .econ-card:hover .card-value { color: var(--accent); }
+        .econ-card .card-value .unit { font-size: 18px; font-weight: 400; color: var(--gray-500); }
+        .econ-card .card-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+
+        .econ-details { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .econ-detail-block h3 {
+            font-size: 14px; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 24px; padding-bottom: 16px;
+            border-bottom: 2px solid var(--black);
+        }
+        .econ-detail-block ul { list-style: none; }
+        .econ-detail-block li {
+            font-size: 14px; line-height: 2.0; color: var(--gray-700);
+            padding: 10px 0; border-bottom: 1px solid var(--gray-200);
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1); padding-left: 0;
+        }
+        .econ-detail-block li:hover { color: var(--black); padding-left: 16px; }
+        .econ-detail-block li strong { color: var(--black); font-weight: 500; }
+
+        /* === 文化 === */
+        .culture-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300);
+            margin-bottom: 80px;
+        }
+        .culture-card {
+            background: var(--white); padding: 40px 32px;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .culture-card:hover { background: var(--gray-100); transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.07); }
+        .culture-card .card-icon {
+            width: 48px; height: 48px; background: var(--black); color: var(--white);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 700; margin-bottom: 24px;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .culture-card:hover .card-icon {
+            background: var(--accent); transform: rotate(15deg) scale(1.15);
+        }
+        .culture-card h4 { font-size: 16px; font-weight: 700; margin-bottom: 12px; }
+        .culture-card p { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+
+        .food-section { display: grid; grid-template-columns: 1fr 2fr; gap: 60px; margin-top: 80px; }
+        .food-section h3 {
+            font-size: 28px; font-weight: 900; letter-spacing: -0.01em;
+            text-transform: uppercase; line-height: 1.2; position: sticky; top: 120px;
+        }
+        .food-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300);
+        }
+        .food-item {
+            background: var(--white); padding: 32px;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .food-item:hover { background: var(--gray-100); transform: translateY(-2px); }
+        .food-item h4 {
+            font-size: 16px; font-weight: 700; margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+        .food-item:hover h4 { color: var(--accent); }
+        .food-item p { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+
+        /* === 旅游 === */
+        .attractions-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300);
+        }
+        .attraction-card {
+            background: var(--white); padding: 40px 32px;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .attraction-card:hover { background: var(--gray-100); transform: translateY(-3px); }
+        .attraction-card .attraction-name {
+            font-size: 20px; font-weight: 700; margin-bottom: 4px;
+            transition: color 0.3s;
+        }
+        .attraction-card:hover .attraction-name { color: var(--accent); }
+        .attraction-card .attraction-tag {
+            font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--gray-500); margin-bottom: 16px; font-weight: 500;
+        }
+        .attraction-card p { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .attraction-card.featured {
+            grid-column: span 2; background: var(--black); color: var(--white);
+            position: relative; overflow: hidden;
+        }
+        .attraction-card.featured::before {
+            content: ''; position: absolute; top: 0; right: 0;
+            width: 120px; height: 120px; background: var(--accent);
+            opacity: 0.08; border-radius: 50%;
+            transform: translate(30%, -30%);
+            transition: transform 0.8s cubic-bezier(0.16,1,0.3,1);
+        }
+        .attraction-card.featured:hover::before { transform: translate(20%, -20%) scale(2); }
+        .attraction-card.featured:hover { transform: translateY(-3px); }
+        .attraction-card.featured .attraction-name { font-size: 32px; }
+        .attraction-card.featured:hover .attraction-name { color: var(--white); }
+        .attraction-card.featured .attraction-tag { color: var(--gray-500); }
+        .attraction-card.featured p { color: var(--gray-300); }
+
+        /* === 高校 === */
+        .university-list {
+            display: grid; grid-template-columns: 1fr; gap: 1px;
+            background: var(--gray-300); border: 1px solid var(--gray-300);
+        }
+        .university-item {
+            background: var(--white); padding: 32px 40px;
+            display: grid; grid-template-columns: 2fr 3fr 1fr;
+            gap: 40px; align-items: center;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .university-item:hover { background: var(--gray-100); padding-left: 56px; }
+        .university-item .uni-name {
+            font-size: 18px; font-weight: 700; transition: color 0.3s;
+        }
+        .university-item:hover .uni-name { color: var(--accent); }
+        .university-item .uni-desc { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+        .university-item .uni-tag {
+            font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--gray-500); font-weight: 500; text-align: right;
+        }
+
+        /* === 数据条 === */
+        .stat-bar { display: flex; align-items: center; margin-bottom: 24px; }
+        .stat-bar-label {
+            width: 200px; font-size: 13px; font-weight: 500; flex-shrink: 0;
+        }
+        .stat-bar-track {
+            flex: 1; height: 8px; background: var(--gray-200);
+            position: relative; overflow: hidden;
+        }
+        .stat-bar-fill {
+            height: 100%; background: var(--black); width: 0;
+            transition: width 1.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .stat-bar-fill.accent { background: var(--accent); }
+        .stat-bar-fill::after {
+            content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 4px;
+            background: inherit; border-radius: 2px;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .stat-bar.animated .stat-bar-fill::after { opacity: 1; animation: fillPulse 1.5s ease-in-out; }
+        @keyframes fillPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(230,57,70,0); }
+            50% { box-shadow: 0 0 8px 2px rgba(230,57,70,0.4); }
+        }
+        .stat-bar-value {
+            width: 120px; text-align: right; font-size: 14px;
+            font-weight: 700; flex-shrink: 0; padding-left: 20px;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .stat-bar.animated .stat-bar-value {
+            color: var(--accent);
+            animation: valueBounce 0.6s cubic-bezier(0.16,1,0.3,1);
+        }
+        @keyframes valueBounce {
+            0% { transform: scale(1); }
+            40% { transform: scale(1.15); color: var(--accent); }
+            100% { transform: scale(1); }
+        }
+
+        /* === 数字滚动特效 === */
+        .count-up, .count-value {
+            display: inline-block; position: relative;
+            transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .counting {
+            color: var(--accent);
+            text-shadow: 0 0 20px rgba(230,57,70,0.15);
+            animation: countPulse 0.3s ease-in-out;
+        }
+        @keyframes countPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .counted::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; width: 100%; height: 2px;
+            background: var(--accent); transform: scaleX(0); transform-origin: left;
+            animation: countLineDraw 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+        }
+        @keyframes countLineDraw { to { transform: scaleX(1); } }
+        .count-value .unit { transition: color 0.4s; }
+        .counting .unit { color: var(--accent); }
+        .count-value.counted { color: var(--black); }
+        .count-value.counted .unit { color: var(--gray-500); }
+
+        /* === 数据高亮闪烁 === */
+        .data-highlight {
+            animation: dataFlash 0.6s cubic-bezier(0.16,1,0.3,1);
+        }
+        @keyframes dataFlash {
+            0% { background: transparent; }
+            30% { background: rgba(230,57,70,0.08); }
+            100% { background: transparent; }
+        }
+
+        /* === 企业 === */
+        .enterprise-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 1px; background: var(--gray-300); border: 1px solid var(--gray-300);
+        }
+        .enterprise-card {
+            background: var(--white); padding: 32px 28px;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .enterprise-card:hover { background: var(--gray-100); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+        .enterprise-card .ent-name {
+            font-size: 16px; font-weight: 700; margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+        .enterprise-card:hover .ent-name { color: var(--accent); }
+        .enterprise-card .ent-industry {
+            font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--gray-500); margin-bottom: 12px; font-weight: 500;
+        }
+        .enterprise-card .ent-data { font-size: 13px; color: var(--gray-700); line-height: 1.7; }
+
+        /* === 未来展望 === */
+        .future-content { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
+        .future-block h3 {
+            font-size: 14px; font-weight: 700; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 24px; padding-bottom: 16px;
+            border-bottom: 2px solid var(--black);
+        }
+        .future-block p { font-size: 14px; line-height: 2.0; color: var(--gray-700); margin-bottom: 20px; }
+        .future-block ul { list-style: none; }
+        .future-block li {
+            font-size: 14px; line-height: 2.0; color: var(--gray-700);
+            padding: 12px 0; border-bottom: 1px solid var(--gray-200);
+            padding-left: 20px; position: relative;
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .future-block li:hover { color: var(--black); padding-left: 30px; }
+        .future-block li::before {
+            content: ''; position: absolute; left: 0; top: 22px;
+            width: 8px; height: 8px; background: var(--accent);
+            transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+        .future-block li:hover::before { transform: scale(1.8) rotate(45deg); }
+
+        /* === 引用 === */
+        .quote-block {
+            padding: 100px 40px; border-top: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--gray-200);
+            position: relative; overflow: hidden;
+        }
+        .quote-block::before {
+            content: '"'; position: absolute; top: -30px; left: 20px;
+            font-size: 250px; font-weight: 900; color: var(--gray-200);
+            line-height: 1; pointer-events: none;
+            transition: transform 1.5s cubic-bezier(0.16,1,0.3,1);
+        }
+        .quote-block:hover::before { transform: scale(1.05) translateY(-10px); }
+        .quote-text {
+            font-size: clamp(24px, 3vw, 42px); font-weight: 300;
+            line-height: 1.4; letter-spacing: -0.01em; max-width: 900px;
+            color: var(--black); position: relative;
+        }
+        .quote-author {
+            margin-top: 24px; font-size: 12px; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--gray-500); font-weight: 500;
+        }
+
+        /* === 页脚 === */
+        .footer { background: var(--black); color: var(--white); padding: 60px 40px 40px; }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px; margin-bottom: 60px;
+        }
+        .footer h4 {
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 20px; font-weight: 500; color: var(--gray-500);
+        }
+        .footer p, .footer li { font-size: 13px; line-height: 1.8; color: var(--gray-300); }
+        .footer ul { list-style: none; }
+        .footer-bottom {
+            border-top: 1px solid var(--gray-700); padding-top: 24px;
+            display: flex; justify-content: space-between;
+            font-size: 11px; color: var(--gray-500); letter-spacing: 1px;
+        }
+
+        /* === 浮动数字装饰 === */
+        .floating-number {
+            position: absolute; font-size: clamp(100px, 15vw, 200px);
+            font-weight: 900; color: var(--gray-100); line-height: 1;
+            pointer-events: none; user-select: none; z-index: 0;
+            will-change: transform;
+        }
+
+        /* === 背景网格装饰 === */
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; opacity: 0.03;
+            background-image:
+                linear-gradient(var(--black) 1px, transparent 1px),
+                linear-gradient(90deg, var(--black) 1px, transparent 1px);
+            background-size: 80px 80px;
+            will-change: transform;
+        }
+
+        /* === 响应式 === */
+        @media (max-width: 1024px) {
+            .hero-meta { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+            .section-header { grid-template-columns: 1fr; gap: 20px; }
+            .econ-grid { grid-template-columns: 1fr; }
+            .culture-grid { grid-template-columns: repeat(2, 1fr); }
+            .attractions-grid { grid-template-columns: repeat(2, 1fr); }
+            .attraction-card.featured { grid-column: span 2; }
+            .enterprise-grid { grid-template-columns: repeat(2, 1fr); }
+            .overview-card:nth-child(1) { grid-column: span 12; }
+            .overview-card:nth-child(2) { grid-column: span 6; }
+            .overview-card:nth-child(3) { grid-column: span 6; }
+            .overview-card:nth-child(4) { grid-column: span 4; }
+            .overview-card:nth-child(5) { grid-column: span 4; }
+            .overview-card:nth-child(6) { grid-column: span 4; }
+            .timeline-item { grid-template-columns: 1fr; gap: 12px; }
+            .econ-details { grid-template-columns: 1fr; gap: 40px; }
+            .food-section { grid-template-columns: 1fr; gap: 40px; }
+            .future-content { grid-template-columns: 1fr; gap: 40px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+            .nav-links { display: none; }
+            .side-nav { right: 20px; }
+            .back-to-top { right: 20px; bottom: 20px; }
+            body { cursor: auto; }
+            .cursor-dot, .cursor-ring { display: none; }
+        }
+
+        @media (max-width: 640px) {
+            .section { padding: 80px 20px; }
+            .hero { padding: 100px 20px 60px; }
+            .hero-meta { grid-template-columns: 1fr; }
+            .culture-grid { grid-template-columns: 1fr; }
+            .attractions-grid { grid-template-columns: 1fr; }
+            .attraction-card.featured { grid-column: span 1; }
+            .enterprise-grid { grid-template-columns: 1fr; }
+            .overview-card:nth-child(1), .overview-card:nth-child(2),
+            .overview-card:nth-child(3), .overview-card:nth-child(4),
+            .overview-card:nth-child(5), .overview-card:nth-child(6) { grid-column: span 12; }
+            .university-item { grid-template-columns: 1fr; gap: 16px; }
+            .stat-bar-label { width: 120px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+            .food-grid { grid-template-columns: 1fr; }
+            .side-nav { display: none !important; }
+            .hero-bg-text { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 自定义光标 -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- 背景网格 -->
+    <div class="bg-grid" id="bgGrid"></div>
+
+    <!-- 加载动画 -->
+    <div class="loader" id="loader">
+        <span class="loader-text">WUHAN</span>
+    </div>
+
+    <!-- 滚动进度条 -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- 导航 -->
+    <nav class="nav" id="navbar">
+        <div class="nav-brand">WUHAN</div>
+        <ul class="nav-links">
+            <li><a href="#overview">概览</a></li>
+            <li><a href="#history">历史</a></li>
+            <li><a href="#economy">经济</a></li>
+            <li><a href="#culture">文化</a></li>
+            <li><a href="#tourism">旅游</a></li>
+            <li><a href="#future">未来</a></li>
+        </ul>
+    </nav>
+
+    <!-- 侧边快捷导航 -->
+    <div class="side-nav">
+        <div class="side-nav-item active" data-target="overview">
+            <div class="side-nav-dot"></div>
+            <span class="side-nav-label">概览</span>
+        </div>
+        <div class="side-nav-item" data-target="history">
+            <div class="side-nav-dot"></div>
+            <span class="side-nav-label">历史</span>
+        </div>
+        <div class="side-nav-item" data-target="economy">
+            <div class="side-nav-dot"></div>
+            <span class="side-nav-label">经济</span>
+        </div>
+        <div class="side-nav-item" data-target="culture">
+            <div class="side-nav-dot"></div>
+            <span class="side-nav-label">文化</span>
+        </div>
+        <div class="side-nav-item" data-target="tourism">
+            <div class="side-nav-dot"></div>
+            <span class="side-nav-label">旅游</span>
+        </div>
+        <div class="side-nav-item" data-target="future">
+            <div class="side-nav-dot"></div>
+            <span class="side-nav-label">未来</span>
+        </div>
+    </div>
+
+    <!-- 回到顶部 -->
+    <button class="back-to-top" id="backToTop" aria-label="回到顶部">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg-text" id="heroBgText">WUHAN</div>
+        <div class="hero-title">
+            <span><span class="hero-word">Wuhan</span></span>
+            <span class="accent-line"><span class="hero-word">武汉</span></span>
+        </div>
+        <p class="hero-subtitle">
+            长江与汉江交汇处，一座拥有3500年历史的英雄城市。从商代盘龙城的青铜文明，到辛亥首义的第一声枪响；从张之洞的洋务自强，到抗疫封城的全民坚守；从"中国光谷"的科技崛起，到"设计之都"的创意迸发——武汉，这座"九省通衢"的千年古都，正以国家中心城市的姿态，书写着新时代的壮丽篇章。
+        </p>
+        <div class="hero-meta">
+            <div class="hero-meta-item"><div class="label">面积</div><div class="value count-value" data-count="8569" data-suffix=" km²" data-format="comma">8,569 km²</div></div>
+            <div class="hero-meta-item"><div class="label">常住人口</div><div class="value count-value" data-count="1377" data-suffix=" 万" data-format="comma">1,377 万</div></div>
+            <div class="hero-meta-item"><div class="label">2025年GDP</div><div class="value count-value" data-count="22147" data-suffix=" 亿元" data-format="comma">22,147 亿元</div></div>
+            <div class="hero-meta-item"><div class="label">行政区划</div><div class="value count-value" data-count="13" data-suffix=" 区">13 区</div></div>
+        </div>
+        <div class="scroll-hint"><span>向下滚动</span><div class="scroll-hint-line"></div></div>
+    </section>
+
+    <!-- 城市概览 -->
+    <section class="section" id="overview">
+        <div class="draw-line reveal"></div>
+        <div class="section-header">
+            <div class="section-number reveal">01 / 城市概览</div>
+            <h2 class="section-title reveal">武汉 <span class="accent">·</span> 基本概况</h2>
+        </div>
+        <div class="overview-grid">
+            <div class="overview-card stagger-item">
+                <div class="card-label">地理位置</div>
+                <div class="card-value">长江之心</div>
+                <div class="card-desc">武汉位于湖北省东部、长江中游，地理坐标东经113°41′-115°05′，北纬29°58′-31°22′。长江与汉江在此交汇，将城市分为武昌、汉口、汉阳三部分，合称"武汉三镇"。作为中国中部地区唯一的副省级市和湖北省省会，武汉素有"九省通衢"之称，是中国内陆最大的水陆空交通枢纽。</div>
+            </div>
+            <div class="overview-card stagger-item">
+                <div class="card-label">气候</div>
+                <div class="card-value">亚热带季风</div>
+                <div class="card-desc">北亚热带季风性湿润气候，四季分明，年均气温15.8-17.5℃，年均降水量1150-1450毫米，无霜期约240天。夏季炎热，素有"火炉"之称；冬季湿冷，春秋宜人。</div>
+            </div>
+            <div class="overview-card stagger-item">
+                <div class="card-label">地形地貌</div>
+                <div class="card-value">平原·丘陵</div>
+                <div class="card-desc">地形以平原为主（占50%以上），低山丘陵占30%。市区内有龟山、蛇山、磨山等残丘。地势自北向南倾斜，海拔多在20-800米之间。</div>
+            </div>
+            <div class="overview-card stagger-item">
+                <div class="card-label">水系</div>
+                <div class="card-value">百湖之市</div>
+                <div class="card-desc">全市有大小湖泊166个，其中东湖是中国最大的城中湖（水域面积33平方公里）。两江交汇、百湖密布，构成了武汉独特的水城风貌。</div>
+            </div>
+            <div class="overview-card stagger-item">
+                <div class="card-label">交通枢纽</div>
+                <div class="card-value">九省通衢</div>
+                <div class="card-desc">中国内陆最大的水陆空综合性交通枢纽，拥有亚洲最大的铁路编组站，天河国际机场是国家门户高铁"米"字形高铁网中心，4小时可达全国主要城市。</div>
+            </div>
+            <div class="overview-card stagger-item">
+                <div class="card-label">城市定位</div>
+                <div class="card-value">国家中心城市</div>
+                <div class="card-desc">国家历史文化名城、国家中心城市、长江经济带核心城市、全面创新改革试验区、国家自主创新示范区，多项国家战略叠加。</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 历史沿革 -->
+    <section class="section" id="history">
+        <div class="draw-line reveal"></div>
+        <div class="section-header">
+            <div class="section-number reveal">02 / 历史沿革</div>
+            <h2 class="section-title reveal">三千年 <span class="accent">·</span> 城市文脉</h2>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item major stagger-item">
+                <div class="timeline-year">前1500</div><div class="timeline-era">商代</div>
+                <div class="timeline-content"><h4>盘龙城 — 武汉城市之根</h4><p>黄陂区盘龙城遗址是商代"南土"的重镇，是长江流域最早的商代城市遗址之一，距今约3500年。盘龙城遗址的发现，将武汉的建城史上溯至商代中期，被誉为"武汉城市之根"。这里出土的青铜器、玉器等文物，证明了长江中游地区早在3500年前就已进入高度发达的青铜文明阶段。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">春秋战国</div><div class="timeline-era">古代</div>
+                <div class="timeline-content"><h4>楚国东境</h4><p>武汉地区先后属楚国，是楚国东境的战略要地。凭借长江、汉水之利，武汉地区水路交通发达，成为楚国向北扩张、问鼎中原的重要通道。楚文化在这里生根发芽，奠定了武汉地区深厚的文化底蕴。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">唐宋</div><div class="timeline-era">古代</div>
+                <div class="timeline-content"><h4>港口繁盛·诗人流连</h4><p>唐代，江夏（武昌）和汉阳均为重要港口城市，经济文化繁荣。李白等诗人多次在此留下诗篇，黄鹤楼成为文人墨客的必游之地。宋代，武昌成为长江中游的商贸中心和军事重镇，城市规模进一步扩大。</p></div>
+            </div>
+            <div class="timeline-item major stagger-item">
+                <div class="timeline-year">1465</div><div class="timeline-era">明成化年间</div>
+                <div class="timeline-content"><h4>汉水改道 — 汉口诞生</h4><p>汉水下游发生自然改道，从龟山之南转入其北汇入长江，由此诞生了汉口。汉口的出现，奠定了武汉三镇（武昌、汉阳、汉口）的地理格局。凭借得天独厚的水运条件，汉口迅速崛起为商业重镇。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">18世纪</div><div class="timeline-era">清中期</div>
+                <div class="timeline-content"><h4>天下四大镇</h4><p>汉口成为中国四大商业中心之一（与京师、苏州、佛山并列），同时被列为"天下四大镇"之一，被誉为"楚中第一繁盛处"。彼时汉口商贾云集、货通天下，已成为内陆地区最大的商业贸易中心。</p></div>
+            </div>
+            <div class="timeline-item major stagger-item">
+                <div class="timeline-year">1861</div><div class="timeline-era">近代</div>
+                <div class="timeline-content"><h4>汉口开埠 — 东方的芝加哥</h4><p>《天津条约》签订后，汉口被开放为通商口岸。1861年3月正式开埠，1862年1月江汉海关正式开关。汉口成为内陆地区最大的对外通商口岸之一，被称为"东方的芝加哥"。开埠后，英、俄、法、德、日等国在汉口设立租界，西方建筑、商业、文化大量涌入。</p></div>
+            </div>
+            <div class="timeline-item major stagger-item">
+                <div class="timeline-year">1889</div><div class="timeline-era">近代</div>
+                <div class="timeline-content"><h4>张之洞洋务运动 — 近代工业摇篮</h4><p>张之洞就任湖广总督，在武汉推行"新政"长达18年：创办汉阳铁厂（中国近代第一家大型钢铁企业，1893年建成）、湖北织布局、湖北枪炮厂，编练新军，创办自强学堂（武汉大学前身，1893年）。武汉由此成为中国近代工业的发源地之一。</p></div>
+            </div>
+            <div class="timeline-item major stagger-item">
+                <div class="timeline-year">1911</div><div class="timeline-era">近代</div>
+                <div class="timeline-content"><h4>辛亥革命武昌起义 — 首义之城</h4><p>宣统三年（1911年）10月10日，武昌新军发动起义，打响了推翻清朝封建统治的第一枪。起义成功后，成立湖北军政府，宣布废除帝制。辛亥革命结束了中国两千余年的封建君主专制制度，开启了民主共和的新纪元。武汉因此被称为"首义之城"。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">1927</div><div class="timeline-era">民国</div>
+                <div class="timeline-content"><h4>三镇合一 — "武汉"定名</h4><p>北伐战争攻克武汉三镇后，国民政府决定迁都武汉。1927年，汉口、武昌合并，与汉阳合称"武汉"，成为中华民国京兆区。"武汉"这一名称正式确立，沿用至今。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">1938</div><div class="timeline-era">民国</div>
+                <div class="timeline-content"><h4>武汉会战 — 抗战转折点</h4><p>1938年6月至10月，中日双方在武汉周边展开大规模会战，是抗日战争中规模最大、持续时间最长的战役之一。双方投入兵力超过140万。虽然武汉最终沦陷，但成功消耗了日军有生力量，使抗日战争从战略防御阶段转入战略相持阶段。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">1949</div><div class="timeline-era">现代</div>
+                <div class="timeline-content"><h4>武汉解放 — 中央直辖市</h4><p>1949年5月16日，中国人民解放军解放武汉三镇。武汉被确定为中央直辖市，成为新中国重要的政治、经济中心之一。1954年6月，武汉改为湖北省省会。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">1984</div><div class="timeline-era">现代</div>
+                <div class="timeline-content"><h4>经济体制改革试点</h4><p>1984年5月，武汉被中共中央、国务院批准为计划单列市和经体制改革综合试点城市，率先进行城市经济体制改革。1986年被国务院命名为国家历史文化名城，1992年被批准为沿江对外开放城市。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">1998</div><div class="timeline-era">现代</div>
+                <div class="timeline-content"><h4>九八抗洪 — 众志成城</h4><p>长江流域发生全流域性特大洪水，武汉水位创历史新高（29.43米）。武汉军民奋力抗洪，数十万干部群众日夜守护长江大堤，确保了城市和人民生命财产安全。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">2007</div><div class="timeline-era">现代</div>
+                <div class="timeline-content"><h4>"两型社会"综合配套改革试验区</h4><p>2007年12月，国家发改委批准武汉城市圈为全国资源节约型、环境友好型社会建设综合配套改革试验区（简称"1+8城市圈"），为武汉的可持续发展注入了新的动力。</p></div>
+            </div>
+            <div class="timeline-item major stagger-item">
+                <div class="timeline-year">2020</div><div class="timeline-era">现代</div>
+                <div class="timeline-content"><h4>新冠疫情 — 英雄城市</h4><p>2020年1月23日，武汉宣布"封城"，关闭离汉通道，是人类历史上首次对千万级人口城市实施的大规模隔离措施。全国4万余名医护人员驰援武汉，建成火神山、雷神山医院及多所方舱医院。4月8日，武汉"解封"，标志着中国疫情防控取得重大战略成果。</p></div>
+            </div>
+            <div class="timeline-item stagger-item">
+                <div class="timeline-year">2021-2025</div><div class="timeline-era">当代</div>
+                <div class="timeline-content"><h4>疫后复苏 — 强势崛起</h4><p>武汉迅速推进复工复产，2020年GDP恢复正增长，2021-2023年实现强势复苏。2025年，武汉GDP达22,147.35亿元，同比增长5.6%，经济总量稳居全国城市前十。武汉造出全球最小原子钟，九峰山半导体基地开工。</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 引用 -->
+    <div class="quote-block">
+        <p class="quote-text reveal-scale">"武汉是英雄的城市，武汉人民是英雄的人民。通过这次抗击疫情斗争，武汉必将再一次被载入英雄史册。"</p>
+        <p class="quote-author reveal-scale">— 习近平，2020年3月考察武汉</p>
+    </div>
+
+    <!-- 经济发展 -->
+    <section class="section" id="economy">
+        <div class="draw-line reveal"></div>
+        <div class="section-header">
+            <div class="section-number reveal">03 / 经济发展</div>
+            <h2 class="section-title reveal">产业 <span class="accent">·</span> 引擎</h2>
+        </div>
+        <div class="econ-grid">
+            <div class="econ-card stagger-item">
+                <div class="card-label">2025年GDP</div>
+                <div class="card-value count-value" data-count="22147" data-format="comma"><span class="num">22,147</span><span class="unit">亿元</span></div>
+                <div class="card-desc">同比增长5.6%，经济总量稳居全国城市前十，副省级城市前五。人均GDP约15.3万元，达到中高收入经济体水平。</div>
+            </div>
+            <div class="econ-card stagger-item">
+                <div class="card-label">产业结构</div>
+                <div class="card-value">2.4 : 31.2 : 66.4</div>
+                <div class="card-desc">第三产业占比66.4%，服务业成为经济增长主引擎。第一产业506.82亿元，第二产业6,584.45亿元，第三产业14,014.96亿元。</div>
+            </div>
+            <div class="econ-card stagger-item">
+                <div class="card-label">常住人口</div>
+                <div class="card-value count-value" data-count="1377" data-format="comma" data-suffix=" 万"><span class="num">1,377</span><span class="unit">万</span></div>
+                <div class="card-desc">城镇化率84.31%，十年人口增长25.97%。2025年居民人均可支配收入62,530元，城镇67,248元，农村35,575元。</div>
+            </div>
+        </div>
+        <div class="econ-details">
+            <div class="econ-detail-block reveal-left">
+                <h3>三大万亿级产业集群</h3>
+                <ul>
+                    <li><strong>光电子信息产业</strong> — 2024年产业规模达7,566亿元，全球最大光纤光缆制造基地、光模块研发生产基地。东湖高新区光电子信息产业规模占全国约50%。</li>
+                    <li><strong>汽车制造与服务产业</strong> — 与光电子信息、大健康构成三大万亿级产业集群。2024年新能源汽车产量占比达55%。岚图、路特斯、东风猛士等品牌加速发展。</li>
+                    <li><strong>生命健康产业（大健康）</strong> — 2024年总规模达5,546亿元，位列全国生物医药产业园第6位。引进培育联影医疗、药明康德、国药等企业。</li>
+                </ul>
+            </div>
+            <div class="econ-detail-block reveal-right">
+                <h3>其他优势产业</h3>
+                <ul>
+                    <li><strong>软件产业</strong> — 2024年规模突破3,500亿元，增速连续三年居全国软件名城之首</li>
+                    <li><strong>智能制造/高端装备</strong> — 节能环保、高端装备、新材料等优势产业过五千亿元级</li>
+                    <li><strong>人工智能</strong> — 1,000+人工智能相关企业，AI产业快速发展</li>
+                    <li><strong>商业航天</strong> — 国家航天产业基地（武汉新洲）加快建设</li>
+                    <li><strong>集成电路</strong> — 长江存储、新思科技等龙头带动全产业链</li>
+                    <li><strong>数字经济</strong> — 占GDP比重达50%，近三年每年提高1个百分点</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top: 80px;">
+            <div class="section-header" style="margin-bottom: 40px;">
+                <div class="section-number reveal"></div>
+                <h2 class="section-title reveal" style="font-size: 32px;">三大 <span class="accent">·</span> 国家级开发区</h2>
+            </div>
+            <div class="econ-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="econ-card stagger-item">
+                    <div class="card-label">东湖新技术开发区（光谷）</div>
+                    <div class="card-value">3,200<span class="unit">亿元</span></div>
+                    <div class="card-desc">2024年GDP突破3,200亿元，同比增长7.1%。国家高新区综合排名第6位，企业总数超16万家。光电子信息、集成电路、量子信息、人形机器人等未来产业。工业增加值增速达17.5%，对全市工业增加值贡献率近60%。</div>
+                </div>
+                <div class="econ-card stagger-item">
+                    <div class="card-label">武汉经济技术开发区（车谷）</div>
+                    <div class="card-value">汽车·智造</div>
+                    <div class="card-desc">汽车及新能源、智能制造、家电等产业。东风汽车、岚图汽车、路特斯等代表企业。岚图汽车整车装配误差毫米级以内。获批"国家新型工业化产业示范基地"。</div>
+                </div>
+                <div class="econ-card stagger-item">
+                    <div class="card-label">武汉临空港经开区（东西湖）</div>
+                    <div class="card-value">网安·物流</div>
+                    <div class="card-desc">网络安全与信息化、现代物流、食品加工、航空航天等。国家网安基地核心区，集聚大量网安企业。武汉枢纽直通线启动建设，商贸服务型国家物流枢纽。</div>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 80px;">
+            <div class="section-header" style="margin-bottom: 40px;">
+                <div class="section-number reveal"></div>
+                <h2 class="section-title reveal" style="font-size: 32px;">龙头 <span class="accent">·</span> 企业</h2>
+            </div>
+            <div class="enterprise-grid">
+                <div class="enterprise-card stagger-item"><div class="ent-name">东风汽车集团</div><div class="ent-industry">汽车制造</div><div class="ent-data">世界500强企业，总部武汉经开区。2024年营收超4,000亿元，中国四大汽车集团之一。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">中国信科集团</div><div class="ent-industry">信息通信</div><div class="ent-data">央企，信息通信领域龙头。在5G、光通信、芯片等领域技术领先。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">长江存储</div><div class="ent-industry">半导体存储</div><div class="ent-data">2025年前三季度营收约320.8亿元，同比增长97.8%。全球NAND市场份额提升至13%。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">中建三局</div><div class="ent-industry">建筑工程</div><div class="ent-data">2024年营收4,481.44亿元，湖北企业100强榜首。火神山、雷神山医院建设者。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">中国宝武武汉总部</div><div class="ent-industry">钢铁制造</div><div class="ent-data">2024年营收1,718亿元。宝钢与武钢联合重组后的区域总部。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">三峡集团</div><div class="ent-industry">清洁能源</div><div class="ent-data">总部迁至武汉，资产总额1.48万亿元。全球最大的水电开发企业。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">九州通医药</div><div class="ent-industry">医药流通</div><div class="ent-data">湖北企业100强前五，中国最大的民营医药流通企业之一。</div></div>
+                <div class="enterprise-card stagger-item"><div class="ent-name">武汉科技创新</div><div class="ent-industry">创新生态</div><div class="ent-data">2024年高新技术企业突破1.6万家，民营企业突破102.5万家。全球创新指数排名全球第13位。</div></div>
+            </div>
+        </div>
+        <div style="margin-top: 80px;">
+            <div class="section-header" style="margin-bottom: 40px;">
+                <div class="section-number reveal"></div>
+                <h2 class="section-title reveal" style="font-size: 32px;">创新 <span class="accent">·</span> 指标</h2>
+            </div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">全球创新指数排名</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="87"></div></div><div class="stat-bar-value" data-count="13" data-suffix="位" data-prefix="全球第">全球第13位</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">高新技术企业</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="90"></div></div><div class="stat-bar-value" data-count="16000" data-suffix="+" data-format="comma">16,000+</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">世界500强在汉</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="62"></div></div><div class="stat-bar-value" data-count="310" data-suffix="家">310家</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">技术合同成交额</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="78"></div></div><div class="stat-bar-value" data-text="持续增长">持续增长</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">数字经济占比</div><div class="stat-bar-track"><div class="stat-bar-fill" data-width="50"></div></div><div class="stat-bar-value" data-count="50" data-suffix="%">50%</div></div>
+            <div class="stat-bar reveal"><div class="stat-bar-label">民营企业数量</div><div class="stat-bar-track"><div class="stat-bar-fill accent" data-width="85"></div></div><div class="stat-bar-value" data-count="102.5" data-suffix="万" data-decimals="1">102.5万</div></div>
+        </div>
+    </section>
+
+    <!-- 文化与美食 -->
+    <section class="section" id="culture">
+        <div class="draw-line reveal"></div>
+        <div class="section-header">
+            <div class="section-number reveal">04 / 文化美食</div>
+            <h2 class="section-title reveal">味道 <span class="accent">·</span> 武汉</h2>
+        </div>
+        <div class="culture-grid">
+            <div class="culture-card stagger-item"><div class="card-icon">荆</div><h4>荆楚文化</h4><p>武汉是荆楚文化的核心发祥地。湖北省博物馆藏有曾侯乙编钟、越王勾践剑、云梦睡虎地秦简等国宝级文物。</p></div>
+            <div class="culture-card stagger-item"><div class="card-icon">码</div><h4>码头文化</h4><p>"九省通衢"的地理位置，塑造了武汉独特的码头文化。码头文化赋予了武汉人豪爽、开放、包容的性格特质。</p></div>
+            <div class="culture-card stagger-item"><div class="card-icon">商</div><h4>商业文化</h4><p>江汉路步行街被誉为"百年商业街"。从明清时期的"天下四大镇"，到近代的"东方的芝加哥"，再到现代的商业中心。</p></div>
+            <div class="culture-card stagger-item"><div class="card-icon">红</div><h4>红色文化</h4><p>作为辛亥革命首义之城，武汉拥有丰富的红色文化资源。八七会议会址、农讲所旧址、中共五大会址等红色场馆。</p></div>
+            <div class="culture-card stagger-item"><div class="card-icon">非</div><h4>非遗传承</h4><p>汉剧是中国最古老的戏曲剧种之一，湖北大鼓是国家级非物质文化遗产，黄鹤楼传说是民间文学类非遗项目。</p></div>
+            <div class="culture-card stagger-item"><div class="card-icon">演</div><h4>演艺文化</h4><p>"知音号"沉浸式演艺游轮是武汉的文化名片，乘船游览欣赏精彩演艺，再现民国时期武汉的繁华景象。</p></div>
+            <div class="culture-card stagger-item"><div class="card-icon">民</div><h4>民俗节庆</h4><p>春节东湖灯会、武汉大学樱花节、武汉渡江节、武汉国际龙舟节，四季皆有精彩活动。</p></div>
+            <div class="culture-card stagger-item"><div class="card-icon">设</div><h4>设计之都</h4><p>2017年，武汉被联合国教科文组织授予"设计之都"称号，成为中国第四个获此殊荣的城市。</p></div>
+        </div>
+        <div class="food-section">
+            <h3 class="reveal-left">武汉 <span style="color:var(--accent)">·</span> 美食地图</h3>
+            <div class="food-grid">
+                <div class="food-item stagger-item"><h4>热干面</h4><p>中国十大面条之首，武汉人"过早"不可或缺的灵魂美食。碱水面配以芝麻酱、辣椒油、酸豆角等调料。</p></div>
+                <div class="food-item stagger-item"><h4>豆皮</h4><p>武汉传统早点，由绿豆、米浆摊成薄皮，内包糯米、肉丁、香菇等馅料，煎至金黄酥脆。</p></div>
+                <div class="food-item stagger-item"><h4>油焖大虾</h4><p>夏季人气美食，武汉人的"夜宵之王"。靓靓蒸虾、虾皇等店铺常年排起长队。</p></div>
+                <div class="food-item stagger-item"><h4>排骨莲藕汤</h4><p>湖北名菜，选用面藕文火煨制，汤色浓白，藕粉肉香。武汉人讲究"无汤不成席"。</p></div>
+                <div class="food-item stagger-item"><h4>武昌鱼</h4><p>"才饮长沙水，又食武昌鱼"，毛泽东的名句让武昌鱼闻名全国。武昌鱼肉质细嫩，清蒸、油焖、红烧皆宜。</p></div>
+                <div class="food-item stagger-item"><h4>武汉鸭脖</h4><p>酱汁类食品，经腌制、风干、烤制等工序。精武鸭脖、周黑鸭等品牌将武汉鸭脖推向全国。</p></div>
+                <div class="food-item stagger-item"><h4>面窝</h4><p>武汉特有小吃，黄豆和滋耙磨浆油炸而成，中间薄脆、边缘软糯。</p></div>
+                <div class="food-item stagger-item"><h4>糊汤粉</h4><p>武汉特色早餐，用鲜鱼熬成浓汤，下米粉制成，油条蘸着糊汤粉吃是经典搭配。</p></div>
+            </div>
+        </div>
+        <div style="margin-top: 80px;">
+            <div class="section-header" style="margin-bottom: 40px;">
+                <div class="section-number reveal"></div>
+                <h2 class="section-title reveal" style="font-size: 32px;">科教 <span class="accent">·</span> 重镇</h2>
+            </div>
+            <p class="reveal" style="font-size:14px;color:var(--gray-700);line-height:1.8;margin-bottom:40px;max-width:800px;">
+                武汉是中国重要的科教中心城市，拥有高等院校83所，在校大学生超过130万人，是全球大学生数量最多的城市之一。
+            </p>
+            <div class="university-list">
+                <div class="university-item stagger-item"><div class="uni-name">武汉大学</div><div class="uni-desc">坐落在珞珈山，东湖之畔，被誉为中国最美的大学之一。是国家"双一流"建设高校。</div><div class="uni-tag">双一流</div></div>
+                <div class="university-item stagger-item"><div class="uni-name">华中科技大学</div><div class="uni-desc">国家"双一流"建设高校，以工科见长，在机械、电气、光电、医学等领域实力雄厚。</div><div class="uni-tag">双一流</div></div>
+                <div class="university-item stagger-item"><div class="uni-name">中国地质大学（武汉）</div><div class="uni-desc">教育部直属全国重点大学，以地球科学为主要特色。逸夫博物馆是知名科普教育基地。</div><div class="uni-tag">双一流</div></div>
+                <div class="university-item stagger-item"><div class="uni-name">华中师范大学</div><div class="uni-desc">教育部直属重点综合性师范大学，是国家培养中、高等学校师资的重要基地。</div><div class="uni-tag">双一流</div></div>
+                <div class="university-item stagger-item"><div class="uni-name">武汉理工大学</div><div class="uni-desc">教育部直属全国重点大学，以材料科学与工程、交通运输工程等为优势学科。</div><div class="uni-tag">双一流</div></div>
+                <div class="university-item stagger-item"><div class="uni-name">中南财经政法大学</div><div class="uni-desc">教育部直属，以经济学、法学、管理学为主干，是国家"211工程"重点建设高校。</div><div class="uni-tag">双一流</div></div>
+                <div class="university-item stagger-item"><div class="uni-name">华中农业大学</div><div class="uni-desc">教育部直属，以生命科学和农学与优势，在作物遗传育种等领域实力雄厚。</div><div class="uni-tag">双一流</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 旅游 -->
+    <section class="section" id="tourism">
+        <div class="draw-line reveal"></div>
+        <div class="section-header">
+            <div class="section-number reveal">05 / 旅游资源</div>
+            <h2 class="section-title reveal">探索 <span class="accent">·</span> 江城</h2>
+        </div>
+        <div class="attractions-grid">
+            <div class="attraction-card featured stagger-item"><div class="attraction-name">黄鹤楼</div><div class="attraction-tag">5A级景区 · 江南三大名楼</div><p>"诗词绝句中的江南名楼"，与岳阳楼、滕王阁并称"江南三大名楼"。始建于三国时期，因崔颢"昔人已乘黄鹤去，此地空余黄鹤楼"的千古绝唱而闻名于世。现楼为1985年重建，高51.4米，飞檐五层，攒尖楼顶，金色琉璃瓦屋面。登楼远眺，长江、龟山、蛇山、武汉三镇尽收眼底。"夜上黄鹤楼"是全新夜游体验，现代光影技术与古典建筑完美融合。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">东湖生态旅游风景区</div><div class="attraction-tag">5A级景区 · 中国最大城中湖</div><p>入选2026全球50赏花踏青景点，免费开放。水域面积33平方公里，是杭州西湖的六倍。东湖绿道全长101.98公里。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">武汉长江大桥</div><div class="attraction-tag">俄式风格地标 · 万里长江第一桥</div><p>1957年建成通车，是新中国成立后修建的第一座公铁两用长江大桥。"一桥飞架南北，天堑变通途"。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">江汉路步行街</div><div class="attraction-tag">百年商业街 · 夜游必打卡</div><p>被誉为"百年商业街"，是武汉近代商业文化的缩影。沿街保留了大量近代欧式建筑群，全长1600米。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">户部巷</div><div class="attraction-tag">著名美食街</div><p>位于武昌区，紧邻黄鹤楼/粮道街商圈。这条长150米的百年老巷，汇集了热干面、豆皮、鸭脖、面窝等武汉特色小吃。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">昙华林</div><div class="attraction-tag">文艺街区 · 近代建筑群</div><p>位于武昌区，是武汉著名的文艺街区。保留了大量近代建筑，中西文化在此交融。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">湖北省博物馆</div><div class="attraction-tag">荆楚文化瑰宝 · 免费开放</div><p>评分4.9/5，馆藏文物26万余件，曾侯乙编钟、越王勾践剑、云梦睡虎地秦简、元青花四爱图梅瓶为四大镇馆之宝。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">汉口江滩</div><div class="attraction-tag">亲子景点榜No.3</div><p>位于长江畔，是武汉市民休闲娱乐的重要场所。入选2026亚洲100亲子景点。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">晴川阁</div><div class="attraction-tag">免费预约 · 遥看三镇</div><p>入选2026中国50赏花踏青景点。位于汉阳龟山东麓，与黄鹤楼隔江相望。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">黎黄陂路</div><div class="attraction-tag">历史风貌街区</div><p>位于汉口原租界区，保存了大量近代欧式建筑。是当下最热门的文创街区之一。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">知音号</div><div class="attraction-tag">沉浸式演艺游轮</div><p>评分4.5/5，乘坐民国风格游轮，在长江上欣赏沉浸式演艺，再现百年前武汉的繁华景象。</p></div>
+            <div class="attraction-card stagger-item"><div class="attraction-name">花博汇</div><div class="attraction-tag">知音花月夜 · 文旅融合</div><p>位于蔡甸区，"知音花月夜"以花为媒，将花海观光、文化演艺、夜间经济融为一体。</p></div>
+        </div>
+        <div style="margin-top: 80px;">
+            <div class="section-header" style="margin-bottom: 40px;">
+                <div class="section-number reveal"></div>
+                <h2 class="section-title reveal" style="font-size: 32px;">博物馆 <span class="accent">·</span> 与 · 文化场馆</h2>
+            </div>
+            <div class="econ-details">
+                <div class="econ-detail-block reveal-left">
+                    <h3>博物馆</h3>
+                    <ul>
+                        <li><strong>湖北省博物馆</strong> — 评分4.9/5，馆藏26万余件文物</li>
+                        <li><strong>武汉革命博物馆</strong> — 位于武昌红巷，展示武汉革命历史</li>
+                        <li><strong>武汉市中山舰博物馆</strong> — 展示中山舰历史</li>
+                        <li><strong>中国地质大学-逸夫博物馆</strong> — 地质科普类博物馆</li>
+                    </ul>
+                </div>
+                <div class="econ-detail-block reveal-right">
+                    <h3>文化场馆</h3>
+                    <ul>
+                        <li><strong>武汉美术馆（汉口馆）</strong> — 展示当代艺术精品</li>
+                        <li><strong>湖北省图书馆</strong> — 重要文化设施，藏书丰富</li>
+                        <li><strong>八七会议会址纪念馆</strong> — 红色文化场馆</li>
+                        <li><strong>农讲所旧址纪念馆</strong> — 毛泽东主办的农民运动讲习所</li>
+                        <li><strong>中共五大会址纪念馆</strong> — 中国共产党第五次全国代表大会会址</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 未来展望 -->
+    <section class="section" id="future">
+        <div class="draw-line reveal"></div>
+        <div class="section-header">
+            <div class="section-number reveal">06 / 未来展望</div>
+            <h2 class="section-title reveal">迈向 <span class="accent">·</span> 世界</h2>
+        </div>
+        <div class="future-content">
+            <div class="future-block reveal-left">
+                <h3>战略定位</h3>
+                <p>武汉正以国家中心城市建设为引领，加速从"中国光谷"迈向"世界光谷"，打造具有全国影响力的科技创新中心。</p>
+                <p>作为长江经济带的核心城市、中部崛起的战略支点，武汉承担着引领中部地区高质量发展的重要使命。</p>
+                <ul>
+                    <li>国家中心城市 — 长江经济带核心城市</li>
+                    <li>具有全国影响力的科技创新中心</li>
+                    <li>国际消费中心城市</li>
+                    <li>"设计之都" — 联合国教科文组织认定</li>
+                    <li>"1+8"武汉城市圈 — 全国"两型社会"试验区</li>
+                </ul>
+            </div>
+            <div class="future-block reveal-right">
+                <h3>发展方向</h3>
+                <p>面向2035年，武汉将基本建成国家中心城市，打造现代化、国际化、生态化的大武汉。以科技创新为引领，以产业升级为核心，以开放合作为支撑。</p>
+                <ul>
+                    <li>世界级光电子信息产业集群</li>
+                    <li>新能源与智能网联汽车产业基地</li>
+                    <li>国家集成电路产业创新中心</li>
+                    <li>国家生物医药产业基地</li>
+                    <li>国家商业航天产业基地（武汉新洲）</li>
+                    <li>国家网络安全人才与创新基地</li>
+                    <li>长江中游航运中心</li>
+                    <li>国家物流枢纽承载城市</li>
+                </ul>
+            </div>
+        </div>
+        <div style="margin-top: 80px;">
+            <div class="section-header" style="margin-bottom: 40px;">
+                <div class="section-number reveal"></div>
+                <h2 class="section-title reveal" style="font-size: 32px;">2025年 <span class="accent">·</span> 最新数据</h2>
+            </div>
+            <div class="econ-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <div class="econ-card stagger-item"><div class="card-label">2025年GDP</div><div class="card-value count-value" data-count="22147" data-format="comma"><span class="num">22,147</span><span class="unit">亿元</span></div><div class="card-desc">同比增长5.6%，经济总量稳居全国城市前十</div></div>
+                <div class="econ-card stagger-item"><div class="card-label">社会消费品零售总额</div><div class="card-value count-value" data-count="9013" data-format="comma"><span class="num">9,013</span><span class="unit">亿元</span></div><div class="card-desc">同比增长4.5%，内需潜力持续释放</div></div>
+                <div class="econ-card stagger-item"><div class="card-label">进出口总额</div><div class="card-value count-value" data-count="4548" data-format="comma"><span class="num">4,548</span><span class="unit">亿元</span></div><div class="card-desc">同比增长12.7%，开放型经济水平提升</div></div>
+                <div class="econ-card stagger-item"><div class="card-label">居民人均可支配收入</div><div class="card-value count-value" data-count="62530" data-format="comma"><span class="num">62,530</span><span class="unit">元</span></div><div class="card-desc">城镇67,248元，农村35,575元，城乡差距持续缩小</div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 引用 -->
+    <div class="quote-block">
+        <p class="quote-text reveal-scale">"大江大湖大武汉"——这是一座因水而兴、因商而盛、因工而强、因创而新的城市。从3500年前的盘龙城到今天的国家中心城市，武汉的故事，就是中国故事的缩影。</p>
+        <p class="quote-author reveal-scale">— 武汉城市形象宣传语</p>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div><h4>Wuhan 武汉</h4><p>中国中部地区唯一的副省级市，湖北省省会，国家历史文化名城，国家中心城市，长江经济带核心城市。长江与汉江交汇处，武汉三镇共同构成了这座"九省通衢"的千年古都。</p></div>
+            <div><h4>联系方式</h4><ul><li>武汉市人民政府</li><li>地址：武汉市江岸区沿江大道188号</li><li>官网：www.wuhan.gov.cn</li><li>邮编：430014</li></ul></div>
+            <div><h4>快速链接</h4><ul><li>投资武汉</li><li>旅游服务</li><li>人才政策</li><li>科技创新</li></ul></div>
+            <div><h4>数据说明</h4><p>本页面数据来源于武汉市人民政府官网、武汉市统计局、湖北省统计局等权威机构发布的2024-2025年最新统计公报和官方信息。</p></div>
+        </div>
+        <div class="footer-bottom"><span>WUHAN — 武汉</span><span>资料截至2025年 · 内容仅供参考</span></div>
+    </footer>
+
+    <script>
+        // === 加载动画 ===
+        window.addEventListener('load', () => {
+            setTimeout(() => { document.getElementById('loader').classList.add('hidden'); }, 600);
+        });
+
+        // === 滚动进度条 ===
+        const scrollProgress = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            scrollProgress.style.width = (scrollTop / docHeight) * 100 + '%';
+        });
+
+        // === 导航滚动效果 ===
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // === 回到顶部 ===
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 600);
+        });
+        backToTop.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+        // === 自定义光标 ===
+        const cursorDot = document.getElementById('cursorDot');
+        const cursorRing = document.getElementById('cursorRing');
+        let mouseX = 0, mouseY = 0, dotX = 0, dotY = 0, ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+        });
+
+        function animateCursor() {
+            dotX += (mouseX - dotX) * 0.35;
+            dotY += (mouseY - dotY) * 0.35;
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            cursorDot.style.transform = `translate(${dotX - 4}px, ${dotY - 4}px)`;
+            cursorRing.style.transform = `translate(${ringX - 20}px, ${ringY - 20}px)`;
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // 光标悬停效果
+        const hoverElements = document.querySelectorAll('a, button, .side-nav-item, .overview-card, .econ-card, .culture-card, .food-item, .attraction-card, .enterprise-card, .university-item, .timeline-item, .footer a');
+        hoverElements.forEach(el => {
+            el.addEventListener('mouseenter', () => { cursorRing.classList.add('hover'); cursorDot.classList.add('hover'); });
+            el.addEventListener('mouseleave', () => { cursorRing.classList.remove('hover'); cursorDot.classList.remove('hover'); });
+        });
+
+        // === 侧边导航显隐控制 ===
+        const sideNav = document.querySelector('.side-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > window.innerHeight * 0.6) {
+                sideNav.classList.add('visible');
+            } else {
+                sideNav.classList.remove('visible');
+            }
+        });
+        const sideNavItems = document.querySelectorAll('.side-nav-item');
+        sideNavItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const section = document.getElementById(item.getAttribute('data-target'));
+                if (section) section.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // === Intersection Observer 滚动动画 ===
+        const observerOptions = { threshold: 0.08, rootMargin: '0px 0px -60px 0px' };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // 字符分解动画
+                    if (entry.target.classList.contains('char-reveal')) {
+                        const chars = entry.target.querySelectorAll('span');
+                        chars.forEach((char, i) => { char.style.transitionDelay = (i * 0.03) + 's'; });
+                    }
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger-item, .char-reveal, .draw-line').forEach(el => observer.observe(el));
+
+        // === Stagger延迟 ===
+        document.querySelectorAll('.stagger-item').forEach((el, i) => {
+            el.style.transitionDelay = Math.min(i * 0.04, 0.3) + 's';
+        });
+
+        // === 侧边导航高亮 ===
+        const sections = document.querySelectorAll('.section');
+        const sideNavObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    sideNavItems.forEach(item => item.classList.toggle('active', item.getAttribute('data-target') === id));
+                }
+            });
+        }, { threshold: 0.25 });
+        sections.forEach(section => sideNavObserver.observe(section));
+
+        // === 数据条动画 + 数字滚动 ===
+        const statBarObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const bar = entry.target;
+                    // 进度条动画
+                    bar.querySelectorAll('.stat-bar-fill').forEach(fill => {
+                        fill.style.width = fill.getAttribute('data-width') + '%';
+                    });
+                    // 添加动画状态类
+                    setTimeout(() => bar.classList.add('animated'), 800);
+                    // 数字滚动动画
+                    const valueEl = bar.querySelector('.stat-bar-value');
+                    if (valueEl && valueEl.dataset.count !== undefined) {
+                        const target = parseFloat(valueEl.dataset.count);
+                        const suffix = valueEl.dataset.suffix || '';
+                        const prefix = valueEl.dataset.prefix || '';
+                        const decimals = parseInt(valueEl.dataset.decimals) || 0;
+                        const format = valueEl.dataset.format || '';
+                        const duration = 2000;
+                        const startTime = performance.now();
+                        valueEl.classList.add('count-up', 'counting');
+                        function updateCounter(currentTime) {
+                            const elapsed = currentTime - startTime;
+                            const progress = Math.min(elapsed / duration, 1);
+                            // easeOutExpo
+                            const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                            const current = target * eased;
+                            let displayValue;
+                            if (decimals > 0) {
+                                displayValue = current.toFixed(decimals);
+                            } else {
+                                displayValue = Math.floor(current).toString();
+                            }
+                            if (format === 'comma') {
+                                displayValue = Number(Math.floor(current * (10 ** decimals)) / (10 ** decimals)).toLocaleString();
+                            }
+                            valueEl.textContent = prefix + displayValue + suffix;
+                            if (progress < 1) {
+                                requestAnimationFrame(updateCounter);
+                            } else {
+                                valueEl.classList.remove('counting');
+                                valueEl.classList.add('counted');
+                            }
+                        }
+                        requestAnimationFrame(updateCounter);
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.stat-bar').forEach(bar => statBarObserver.observe(bar));
+
+        // === 视差效果 ===
+        const heroBgText = document.getElementById('heroBgText');
+        const bgGrid = document.getElementById('bgGrid');
+        window.addEventListener('scroll', () => {
+            const scrolled = window.scrollY;
+            if (heroBgText) heroBgText.style.transform = `translateY(${scrolled * 0.3}px)`;
+            if (bgGrid) bgGrid.style.transform = `translateY(${scrolled * 0.05}px)`;
+        });
+
+        // === 磁性悬停效果 ===
+        document.querySelectorAll('.overview-card, .econ-card, .culture-card, .enterprise-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                card.style.transform = `translate(${x * 0.05}px, ${y * 0.05}px) translateY(-4px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+
+        // === 文字打乱效果 ===
+        class TextScramble {
+            constructor(el) { this.el = el; this.chars = '!<>-_\\/[]{}—=+*^?#________'; this.update = this.update.bind(this); }
+            setText(newText) {
+                const oldText = this.el.innerText;
+                const length = Math.max(oldText.length, newText.length);
+                const promise = new Promise((resolve) => this.resolve = resolve);
+                this.queue = [];
+                for (let i = 0; i < length; i++) {
+                    const from = oldText[i] || '';
+                    const to = newText[i] || '';
+                    const start = Math.floor(Math.random() * 40);
+                    const end = start + Math.floor(Math.random() * 40);
+                    this.queue.push({ from, to, start, end });
+                }
+                cancelAnimationFrame(this.frameRequest);
+                this.frame = 0;
+                this.update();
+                return promise;
+            }
+            update() {
+                let output = '';
+                let complete = 0;
+                for (let i = 0, n = this.queue.length; i < n; i++) {
+                    let { from, to, start, end, char } = this.queue[i];
+                    if (this.frame >= end) { complete++; output += to; }
+                    else if (this.frame >= start) {
+                        if (!char || Math.random() < 0.28) {
+                            char = this.chars[Math.floor(Math.random() * this.chars.length)];
+                            this.queue[i].char = char;
+                        }
+                        output += `<span style="color:var(--accent)">${char}</span>`;
+                    } else output += from;
+                }
+                this.el.innerHTML = output;
+                if (complete === this.queue.length) { this.resolve(); }
+                else { this.frameRequest = requestAnimationFrame(this.update); this.frame++; }
+            }
+        }
+
+        // 对标题应用打乱效果
+        const titleObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.scrambled) {
+                    entry.target.dataset.scrambled = 'true';
+                    const scrambler = new TextScramble(entry.target);
+                    scrambler.setText(entry.target.innerText);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.section-number').forEach(el => titleObserver.observe(el));
+
+        // === 鼠标点击涟漪效果 ===
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: fixed; left: ${e.clientX}px; top: ${e.clientY}px;
+                width: 0; height: 0; border-radius: 50%; pointer-events: none; z-index: 99998;
+                background: rgba(230,57,70,0.1); transform: translate(-50%,-50%);
+                transition: width 0.8s cubic-bezier(0.16,1,0.3,1), height 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.8s; opacity: 1;
+            `;
+            document.body.appendChild(ripple);
+            requestAnimationFrame(() => { ripple.style.width = '200px'; ripple.style.height = '200px'; ripple.style.opacity = '0'; });
+            setTimeout(() => ripple.remove(), 800);
+        });
+
+        // === Econ Card 数据高亮 ===
+        const econCardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.highlighted) {
+                    entry.target.dataset.highlighted = 'true';
+                    entry.target.classList.add('data-highlight');
+                    setTimeout(() => entry.target.classList.remove('data-highlight'), 600);
+                }
+            });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.econ-card').forEach(card => econCardObserver.observe(card));
+
+        // === 通用数字滚动动画 ===
+        function animateCountUp(el, target, options = {}) {
+            const { duration = 2000, decimals = 0, format = '', prefix = '', suffix = '' } = options;
+            const startTime = performance.now();
+            el.classList.add('counting');
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+                const current = target * eased;
+                let displayValue;
+                if (decimals > 0) {
+                    displayValue = current.toFixed(decimals);
+                } else {
+                    displayValue = Math.floor(current).toString();
+                }
+                if (format === 'comma') {
+                    displayValue = Math.floor(current).toLocaleString();
+                }
+                const unitEl = el.querySelector('.unit');
+                const numEl = el.querySelector('.num');
+                if (numEl) {
+                    numEl.textContent = prefix + displayValue;
+                } else {
+                    el.textContent = prefix + displayValue + suffix;
+                }
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    el.classList.remove('counting');
+                    el.classList.add('counted');
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        // Hero meta数字动画（页面加载后触发）
+        setTimeout(() => {
+            document.querySelectorAll('.hero-meta-item .count-value').forEach(el => {
+                const target = parseFloat(el.dataset.count);
+                const format = el.dataset.format || '';
+                const suffix = el.dataset.suffix || '';
+                const decimals = parseInt(el.dataset.decimals) || 0;
+                animateCountUp(el, target, { duration: 1800, decimals, format, suffix });
+            });
+        }, 1200);
+
+        // Econ card + 底部数据数字动画（滚动触发）
+        const countValueObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !entry.target.dataset.counted) {
+                    entry.target.dataset.counted = 'true';
+                    const target = parseFloat(entry.target.dataset.count);
+                    const format = entry.target.dataset.format || '';
+                    const suffix = entry.target.dataset.suffix || '';
+                    const decimals = parseInt(entry.target.dataset.decimals) || 0;
+                    animateCountUp(entry.target, target, { duration: 2000, decimals, format, suffix });
+                }
+            });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.count-value').forEach(el => countValueObserver.observe(el));
+
+        // === 平滑滚动偏移 ===
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offset = 80;
+                    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // === 页面可见性动画触发 ===
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                document.querySelectorAll('.reveal:not(.visible), .reveal-left:not(.visible), .reveal-right:not(.visible), .reveal-scale:not(.visible)').forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) el.classList.add('visible');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>

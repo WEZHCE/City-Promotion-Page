@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南阳 NANYANG | 瑞士国际主义风格城市志</title>
+    <style>
+        :root {
+            --red: #E63946;
+            --dark: #1D3557;
+            --light: #F1FAEE;
+            --blue: #457B9D;
+            --gray: #A8DADC;
+            --text: #2b2d42;
+            --bg: #ffffff;
+            --spacing: 80px;
+            --grid-gap: 30px;
+            --shadow-sm: 0 2px 8px rgba(29, 53, 87, 0.06);
+            --shadow-md: 0 4px 20px rgba(29, 53, 87, 0.08);
+            --shadow-lg: 0 12px 40px rgba(29, 53, 87, 0.12);
+            --shadow-hover: 0 20px 50px rgba(29, 53, 87, 0.18);
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            background: var(--bg);
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, '思源黑体', sans-serif;
+            line-height: 1.5;
+            color: var(--text);
+            background: var(--bg);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            cursor: none;
+        }
+        footer {
+            margin-bottom: 0;
+            padding-bottom: 40px;
+        }
+        /* 自定义光标 */
+        .cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s ease, opacity 0.3s ease;
+        }
+        .cursor-ring {
+            position: fixed;
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--dark);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.3s ease;
+        }
+        .cursor-dot.active {
+            transform: translate(-50%, -50%) scale(0.5);
+        }
+        .cursor-ring.active {
+            width: 56px;
+            height: 56px;
+        }
+        .cursor-ring.hover {
+            width: 48px;
+            height: 48px;
+            border-color: #FFD100;
+            border-width: 2px;
+            background: transparent;
+            box-shadow: 0 0 0 1px rgba(29, 53, 87, 0.3);
+        }
+        /* 深色背景下的光标适配 */
+        .cursor-dot.dark {
+            background: #fff;
+        }
+        .cursor-ring.dark {
+            border-color: #fff;
+        }
+        .cursor-ring.dark.hover {
+            border-color: #FFD100;
+            background: transparent;
+            box-shadow: 0 0 0 1px rgba(29, 53, 87, 0.3);
+        }
+        /* 移动端恢复默认光标 */
+        @media (hover: none) and (pointer: coarse) {
+            body {
+                cursor: auto;
+            }
+            .cursor-dot, .cursor-ring {
+                display: none !important;
+            }
+        }
+        /* 瑞士风格核心：严格网格 */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        /* 公共区块样式 */
+        .section {
+            padding: var(--spacing) 0;
+            position: relative;
+        }
+        .section-header {
+            margin-bottom: 60px;
+        }
+        .section-num {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: var(--red);
+            color: #fff;
+            font-size: 18px;
+            font-weight: 900;
+            text-align: center;
+            line-height: 50px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        .section-num:hover {
+            transform: scale(1.1) rotate(8deg);
+            box-shadow: var(--shadow-md);
+        }
+        .section-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--dark);
+            letter-spacing: -2px;
+            line-height: 1;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--blue);
+            max-width: 600px;
+            font-weight: 500;
+        }
+        /* 滚动动画初始状态 */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .scroll-animate.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-animate.delay-1 { transition-delay: 0.1s; }
+        .scroll-animate.delay-2 { transition-delay: 0.2s; }
+        .scroll-animate.delay-3 { transition-delay: 0.3s; }
+        .scroll-animate.delay-4 { transition-delay: 0.4s; }
+        .card {
+            background: #f8f9fa;
+            padding: 32px;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+        /* 导航 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            border-bottom: 2px solid transparent;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        nav.scrolled {
+            border-bottom-color: var(--dark);
+            box-shadow: var(--shadow-md);
+        }
+        .nav-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 900;
+            color: var(--dark);
+            letter-spacing: -1px;
+            transition: var(--transition);
+        }
+        .logo:hover {
+            color: var(--red);
+            transform: scale(1.05);
+        }
+        .logo span {
+            color: var(--red);
+        }
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+        .nav-links a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: var(--transition);
+            position: relative;
+            padding: 8px 0;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--red);
+            transition: var(--transition);
+        }
+        .nav-links a:hover {
+            color: var(--red);
+        }
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            padding-top: 70px;
+            display: flex;
+            align-items: center;
+            background: var(--light);
+        }
+        .hero-title {
+            font-size: 9rem;
+            font-weight: 900;
+            color: var(--dark);
+            letter-spacing: -6px;
+            line-height: 0.85;
+            margin-bottom: 40px;
+            grid-column: 1 / 8;
+        }
+        .hero-title span {
+            color: var(--red);
+        }
+        .hero-desc {
+            grid-column: 1 / 7;
+            font-size: 1.5rem;
+            color: var(--text);
+            margin-bottom: 60px;
+        }
+        .hero-stats {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            margin-top: 60px;
+            border-top: 3px solid var(--dark);
+            border-bottom: 3px solid var(--dark);
+        }
+        .stat {
+            padding: 32px 24px;
+            border-right: 1px solid #ddd;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        .stat:last-child {
+            border-right: none;
+        }
+        .stat:hover {
+            background: var(--dark);
+            color: #fff;
+        }
+        .stat:hover .stat-num, .stat:hover .stat-label {
+            color: #fff;
+        }
+        .stat-num {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--red);
+            line-height: 1;
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+        .stat-label {
+            font-size: 12px;
+            color: var(--dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+        /* 概况 */
+        .overview {
+            background: var(--dark);
+            color: #fff;
+        }
+        .overview .section-title, .overview .section-subtitle {
+            color: #fff;
+        }
+        .overview-visual {
+            grid-column: 1 / 5;
+            align-self: center;
+        }
+        .geo-box {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            font-weight: 900;
+            color: #fff;
+            clip-path: polygon(0 25%, 25% 0, 100% 0, 100% 75%, 75% 100%, 0 100%);
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+        }
+        .geo-box:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: var(--shadow-hover);
+            clip-path: polygon(0 0, 75% 0, 100% 25%, 100% 100%, 25% 100%, 0 75%);
+        }
+        .overview-content {
+            grid-column: 6 / 13;
+        }
+        .overview-list {
+            list-style: none;
+            margin-top: 40px;
+        }
+        .overview-list li {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            border-radius: 4px;
+            padding: 20px 16px;
+            margin-bottom: 8px;
+        }
+        .overview-list li:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateX(8px);
+        }
+        .overview-list li span:first-child {
+            color: var(--gray);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        /* 历史 */
+        .history-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--grid-gap);
+        }
+        .history-card {
+            background: var(--light);
+            padding: 40px 32px;
+            position: relative;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        .history-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+        .history-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 100%;
+            background: var(--red);
+            transition: var(--transition);
+        }
+        .history-card:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+        .history-year {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--red);
+            margin-bottom: 16px;
+            transition: var(--transition);
+        }
+        .history-card:hover .history-year {
+            transform: scale(1.1);
+        }
+        .history-card h3 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 12px;
+            font-weight: 700;
+            position: relative;
+            z-index: 2;
+        }
+        .history-card p {
+            color: var(--text);
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+        }
+        /* 经济 */
+        .economy {
+            background: #f8f9fa;
+        }
+        .econ-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--grid-gap);
+            margin-bottom: var(--grid-gap);
+        }
+        .econ-card {
+            background: #fff;
+            padding: 40px 24px;
+            text-align: center;
+            border: 2px solid var(--dark);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+        }
+        .econ-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--red);
+            background: var(--light);
+        }
+        .econ-icon {
+            width: 70px;
+            height: 70px;
+            background: var(--dark);
+            color: #fff;
+            margin: 0 auto 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 900;
+            transition: var(--transition);
+        }
+        .econ-card:hover .econ-icon {
+            background: var(--red);
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: var(--shadow-md);
+        }
+        .econ-card h3 {
+            font-size: 1.25rem;
+            color: var(--dark);
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        .econ-num {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--red);
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+        .econ-card:hover .econ-num {
+            transform: scale(1.15);
+        }
+        .econ-card p {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        .highlight {
+            grid-column: 1 / 13;
+            background: var(--dark);
+            color: #fff;
+            padding: 60px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+        .highlight:hover {
+            box-shadow: var(--shadow-hover);
+        }
+        .highlight h3 {
+            font-size: 2rem;
+            margin-bottom: 24px;
+            font-weight: 700;
+        }
+        .highlight p {
+            color: var(--gray);
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+        }
+        .highlight-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+        .h-stat-num {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--red);
+            transition: var(--transition);
+        }
+        .h-stat-num:hover {
+            transform: scale(1.1);
+        }
+        .h-stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        /* 文旅 */
+        .culture-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--grid-gap);
+        }
+        .culture-card {
+            background: #fff;
+            border: 2px solid var(--dark);
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+        .culture-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--red);
+        }
+        .culture-header {
+            background: var(--dark);
+            color: #fff;
+            padding: 28px 32px;
+            font-size: 1.75rem;
+            font-weight: 900;
+            transition: var(--transition);
+        }
+        .culture-card:hover .culture-header {
+            background: var(--red);
+        }
+        .culture-body {
+            padding: 32px;
+        }
+        .culture-list {
+            list-style: none;
+        }
+        .culture-list li {
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 1rem;
+            transition: var(--transition);
+            padding-left: 8px;
+        }
+        .culture-list li:hover {
+            background: var(--light);
+            transform: translateX(8px);
+            color: var(--red);
+        }
+        .culture-list li::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: var(--red);
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        .culture-list li:hover::before {
+            transform: scale(1.5);
+        }
+        /* 交通 */
+        .traffic .grid {
+            align-items: start;
+        }
+        .traffic-content {
+            grid-column: 1 / 7;
+        }
+        .traffic-content h3 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 16px;
+            margin-top: 32px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+        .traffic-content h3:hover {
+            color: var(--red);
+            padding-left: 8px;
+        }
+        .traffic-content p {
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+        .traffic-card {
+            grid-column: 8 / 13;
+            background: var(--red);
+            color: #fff;
+            padding: 50px;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+        .traffic-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+        .traffic-card h3 {
+            font-size: 1.75rem;
+            margin-bottom: 32px;
+            font-weight: 700;
+        }
+        .traffic-list {
+            list-style: none;
+        }
+        .traffic-list li {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 1.1rem;
+            transition: var(--transition);
+            padding-left: 8px;
+        }
+        .traffic-list li:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(8px);
+        }
+        /* 规划 */
+        .future-grid {
+            grid-column: 1 / 13;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--grid-gap);
+        }
+        .future-card {
+            padding: 50px;
+            color: #fff;
+            transition: var(--transition);
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+        }
+        .future-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+        .future-card:first-child {
+            background: var(--dark);
+        }
+        .future-card:last-child {
+            background: var(--red);
+        }
+        .future-card h3 {
+            font-size: 2.5rem;
+            margin-bottom: 24px;
+            font-weight: 900;
+        }
+        .future-card p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        /* 返回顶部 */
+        .back-to-top {
+            position: fixed;
+            bottom: 40px;
+            right: 40px;
+            width: 60px;
+            height: 60px;
+            background: var(--red);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+            z-index: 998;
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--dark);
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: var(--shadow-hover);
+        }
+        /* 页脚 */
+        footer {
+            background: var(--dark);
+            color: #fff;
+            padding: 60px 0 40px;
+            margin-top: var(--spacing);
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+        .footer-info {
+            grid-column: 1 / 7;
+        }
+        .footer-info h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 900;
+        }
+        .footer-info p {
+            color: var(--gray);
+            font-size: 1.1rem;
+        }
+        .footer-meta {
+            grid-column: 8 / 13;
+            align-self: end;
+        }
+        .footer-meta p {
+            color: var(--gray);
+            font-size: 13px;
+            line-height: 2;
+            transition: var(--transition);
+        }
+        .footer-meta p:hover {
+            color: #fff;
+            transform: translateX(8px);
+        }
+        /* 响应式 */
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                padding: 0 20px;
+            }
+            .hero-title {
+                font-size: 5rem;
+                grid-column: 1 / 3;
+            }
+            .hero-desc, .overview-visual, .overview-content, .traffic-content, .traffic-card, .footer-info, .footer-meta {
+                grid-column: 1 / 3;
+            }
+            .hero-stats, .history-grid, .econ-grid, .culture-grid, .future-grid, .highlight {
+                grid-template-columns: 1fr;
+            }
+            .section-title {
+                font-size: 2.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .back-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+            }
+        }
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+                letter-spacing: -2px;
+            }
+            .section {
+                padding: 60px 0;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .stat-num, .econ-num, .h-stat-num {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 自定义光标 -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+    <!-- 导航 -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <div class="logo">NANYANG<span>.</span></div>
+            <div class="nav-links">
+                <a href="#overview">概况</a>
+                <a href="#history">历史</a>
+                <a href="#economy">经济</a>
+                <a href="#culture">文旅</a>
+                <a href="#traffic">交通</a>
+                <a href="#future">规划</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="grid">
+            <h1 class="hero-title scroll-animate">南阳<span>.</span></h1>
+            <p class="hero-desc scroll-animate delay-1">古称宛城，河南省副中心城市，南水北调中线工程核心水源地，2700年历史的国家历史文化名城，一个值得三顾的魅力之城。</p>
+            <div class="hero-stats scroll-animate delay-2">
+                <div class="stat">
+                    <div class="stat-num" data-target="26600">0</div>
+                    <div class="stat-label">面积/km²</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num" data-target="1200">0</div>
+                    <div class="stat-label">户籍人口/万</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num" data-target="5167">0</div>
+                    <div class="stat-label">2025年GDP/亿</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num" data-target="6.5">0</div>
+                    <div class="stat-label">GDP增速/%</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 概况 -->
+    <section class="section overview" id="overview">
+        <div class="grid">
+            <div class="overview-visual scroll-animate">
+                <div class="geo-box">宛</div>
+            </div>
+            <div class="overview-content scroll-animate delay-1">
+                <div class="section-header">
+                    <div class="section-num">01</div>
+                    <h2 class="section-title">城市概况</h2>
+                    <p class="section-subtitle">豫鄂陕三省交界的区域性中心城市，河南省面积最大、人口最多的地级市，承担着引领豫南地区高质量发展的重要使命。</p>
+                </div>
+                <ul class="overview-list">
+                    <li><span>地理位置</span>河南省西南部，南阳盆地</li>
+                    <li><span>行政区划</span>13个县市区、4个功能区</li>
+                    <li><span>城市荣誉</span>全国文明城市、国家卫生城市、中国优秀旅游城市</li>
+                    <li><span>核心定位</span>省域副中心城市、全国性综合交通枢纽</li>
+                    <li><span>生态地位</span>南水北调核心水源地、淮河发源地</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 历史 -->
+    <section class="section history" id="history">
+        <div class="grid">
+            <div class="section-header scroll-animate" style="grid-column: 1/13;">
+                <div class="section-num">02</div>
+                <h2 class="section-title">历史沿革</h2>
+                <p class="section-subtitle">50万年人类文明史、2700多年建城史，从远古猿人到现代化新城，南阳见证了中华文明的传承与发展。</p>
+            </div>
+            <div class="history-grid">
+                <div class="history-card scroll-animate delay-1">
+                    <div class="history-year">50万年前</div>
+                    <h3>远古文明</h3>
+                    <p>南召猿人在白河上游繁衍生息，使用打制石器，开启南阳人类文明序幕。</p>
+                </div>
+                <div class="history-card scroll-animate delay-2">
+                    <div class="history-year">秦汉</div>
+                    <h3>盛世繁华</h3>
+                    <p>秦置南阳郡，西汉为全国六大都会，东汉为帝乡，达到发展鼎盛期。</p>
+                </div>
+                <div class="history-card scroll-animate delay-3">
+                    <div class="history-year">三国</div>
+                    <h3>三顾茅庐</h3>
+                    <p>诸葛亮隐居卧龙岗，刘备三顾请其出山，成就千古佳话，奠定三国文化地位。</p>
+                </div>
+                <div class="history-card scroll-animate delay-1">
+                    <div class="history-year">隋唐</div>
+                    <h3>文化鼎盛</h3>
+                    <p>李白、孟浩然、韩愈等名家游历留下大量诗篇，经济文化持续繁荣。</p>
+                </div>
+                <div class="history-card scroll-animate delay-2">
+                    <div class="history-year">明清</div>
+                    <h3>府治延续</h3>
+                    <p>设南阳府，一直是豫西南政治、经济、文化中心，底蕴深厚。</p>
+                </div>
+                <div class="history-card scroll-animate delay-3">
+                    <div class="history-year">新时代</div>
+                    <h3>跨越发展</h3>
+                    <p>锚定副中心城市建设目标，推进产业升级、城市更新，实现高质量发展。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 经济 -->
+    <section class="section economy" id="economy">
+        <div class="grid">
+            <div class="section-header scroll-animate" style="grid-column: 1/13;">
+                <div class="section-num">03</div>
+                <h2 class="section-title">经济发展</h2>
+                <p class="section-subtitle">2025年GDP达5167.86亿元，增长6.5%，六大主导产业协同发展，构建现代产业体系。</p>
+            </div>
+            <div class="econ-grid">
+                <div class="econ-card scroll-animate delay-1">
+                    <div class="econ-icon">医</div>
+                    <h3>中医药产业</h3>
+                    <div class="econ-num" data-target="400" data-unit="亿">0亿</div>
+                    <p>中药材种植面积180万亩，是全国重要中医药产区，医圣张仲景故乡。</p>
+                </div>
+                <div class="econ-card scroll-animate delay-2">
+                    <div class="econ-icon">光</div>
+                    <h3>光电产业</h3>
+                    <div class="econ-num" data-target="200" data-unit="亿">0亿</div>
+                    <p>国家光电高新技术产业化基地，光学元件、显示产品应用广泛。</p>
+                </div>
+                <div class="econ-card scroll-animate delay-3">
+                    <div class="econ-icon">装</div>
+                    <h3>装备制造</h3>
+                    <div class="econ-num" data-target="800" data-unit="亿">0亿</div>
+                    <p>防爆电机产量占全国60%以上，是全国最大防爆电机生产基地。</p>
+                </div>
+                <div class="econ-card scroll-animate delay-1">
+                    <div class="econ-icon">新</div>
+                    <h3>新能源</h3>
+                    <div class="econ-num" data-target="300" data-unit="亿">0亿</div>
+                    <p>全国重要光伏生产基地，涵盖光伏、风电、生物质能产业。</p>
+                </div>
+                <div class="econ-card scroll-animate delay-2">
+                    <div class="econ-icon">农</div>
+                    <h3>绿色食品</h3>
+                    <div class="econ-num" data-target="600" data-unit="亿">0亿</div>
+                    <p>素有"中州粮仓"之称，是全国重要粮食、油料、畜禽产品生产基地。</p>
+                </div>
+                <div class="econ-card scroll-animate delay-3">
+                    <div class="econ-icon">花</div>
+                    <h3>月季产业</h3>
+                    <div class="econ-num" data-target="300" data-unit="亿">0亿</div>
+                    <p>全球最大月季生产基地，出口20多个国家，是"中国月季之乡"。</p>
+                </div>
+            </div>
+            <div class="highlight scroll-animate">
+                <div>
+                    <h3>核心经济数据</h3>
+                    <p>2025年全市经济顶压前行、稳中向好，圆满完成年度预期目标，多项指标高于全国、全省平均水平。</p>
+                    <div class="highlight-stats">
+                        <div>
+                            <div class="h-stat-num" data-target="364.32" data-unit="亿">0亿</div>
+                            <div class="h-stat-label">财政总收入</div>
+                        </div>
+                        <div>
+                            <div class="h-stat-num" data-target="2599.76" data-unit="亿">0亿</div>
+                            <div class="h-stat-label">社零总额</div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3>产业优势</h3>
+                    <p>形成了中医药、光电、装备制造、新能源、绿色食品、月季六大特色优势产业，产业集群效应显著，产业链条完整，是河南省重要的先进制造业基地。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 文旅 -->
+    <section class="section culture" id="culture">
+        <div class="grid">
+            <div class="section-header scroll-animate" style="grid-column: 1/13;">
+                <div class="section-num">04</div>
+                <h2 class="section-title">文化旅游</h2>
+                <p class="section-subtitle">国家历史文化名城，中国优秀旅游城市，56家A级景区，多元文化底蕴深厚，是理想的文化旅游目的地。</p>
+            </div>
+            <div class="culture-grid">
+                <div class="culture-card scroll-animate delay-1">
+                    <div class="culture-header">核心景区</div>
+                    <div class="culture-body">
+                        <ul class="culture-list">
+                            <li>卧龙岗文化园：5A景区，三国文化发源地</li>
+                            <li>内乡县衙：天下第一衙，全国最完整县级官署</li>
+                            <li>宝天曼：世界生物圈保护区，生态旅游胜地</li>
+                            <li>丹江口水库：南水北调核心水源地，亚洲最大人工淡水湖</li>
+                            <li>医圣祠：中医药文化发源地，医圣张仲景墓祠</li>
+                            <li>南阳汉画馆：全国最大汉画像石专题博物馆</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="culture-card scroll-animate delay-2">
+                    <div class="culture-header">特色文化</div>
+                    <div class="culture-body">
+                        <ul class="culture-list">
+                            <li>汉文化：东汉帝乡，汉画像石占全国总量1/3</li>
+                            <li>玉文化：独山玉是中国四大名玉之一，镇平是"中国玉雕之乡"</li>
+                            <li>中医药文化：《伤寒杂病论》诞生于此，医圣文化底蕴深厚</li>
+                            <li>三国文化：三顾茅庐发生地，三国遗迹众多</li>
+                            <li>月季文化：全球月季交易中心，每年举办世界月季博览会</li>
+                            <li>非遗文化：南阳烙画、南阳玉器等多项国家级非遗</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 交通 -->
+    <section class="section traffic" id="traffic">
+        <div class="grid">
+            <div class="section-header scroll-animate" style="grid-column: 1/13;">
+                <div class="section-num">05</div>
+                <h2 class="section-title">交通区位</h2>
+                <p class="section-subtitle">承东启西、连南贯北的综合交通枢纽，铁路、公路、航空立体交通网络完善，是全国性综合交通枢纽城市。</p>
+            </div>
+            <div class="traffic-content scroll-animate delay-1">
+                <h3>铁路航空</h3>
+                <p>焦柳、宁西、郑渝高铁三条干线交汇，南阳到郑州仅1.5小时，到北京4.5小时。姜营机场通航30多个城市，年旅客量超180万人次，2026年计划开通国际航线。</p>
+                <h3>公路网络</h3>
+                <p>10条高速公路贯通全境，通车里程800多公里居全省第一，实现县县通高速，是国家级公路运输枢纽城市。</p>
+            </div>
+            <div class="traffic-card scroll-animate delay-2">
+                <h3>重点线路</h3>
+                <ul class="traffic-list">
+                    <li>郑渝高铁：连接郑州、重庆，1.5小时到省会</li>
+                    <li>二广高速：贯穿南北，连接珠三角地区</li>
+                    <li>沪陕高速：横贯东西，对接长三角经济区</li>
+                    <li>姜营机场：计划开通国际航线，提升对外开放水平</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 规划 -->
+    <section class="section future" id="future">
+        <div class="grid">
+            <div class="section-header scroll-animate" style="grid-column: 1/13;">
+                <div class="section-num">06</div>
+                <h2 class="section-title">未来规划</h2>
+                <p class="section-subtitle">锚定省域副中心城市目标，推进六大行动，奋力谱写中国式现代化建设南阳篇章。</p>
+            </div>
+            <div class="future-grid">
+                <div class="future-card scroll-animate delay-1">
+                    <h3>2027目标</h3>
+                    <p>GDP突破6000亿元，进入全国地级市50强，建成省域副中心城市，产业、城市、生态、民生实现跨越式发展。</p>
+                </div>
+                <div class="future-card scroll-animate delay-2">
+                    <h3>2030目标</h3>
+                    <p>GDP突破8000亿元，建成全国重要先进制造业基地、中医药传承创新基地、新能源基地，成为豫陕鄂区域性中心城市。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-info scroll-animate">
+                <h2>南阳 NANYANG</h2>
+                <p>一个值得三顾的魅力之城，诚邀您前来观光旅游、投资兴业，共谋发展，共创未来。</p>
+            </div>
+            <div class="footer-meta scroll-animate delay-1">
+                <p>数据来源：南阳市人民政府门户网站</p>
+                <p>2025年南阳市国民经济和社会发展统计公报</p>
+                <p>数据更新至2026年8月</p>
+                <p>瑞士国际主义平面设计风格制作</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 返回顶部 -->
+    <button class="back-to-top" id="backToTop">↑</button>
+
+    <script>
+        // 滚动动画
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -80px 0px'
+        };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.scroll-animate').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 数字滚动动画
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('[data-target]');
+            numbers.forEach(num => {
+                const target = parseFloat(num.dataset.target);
+                const duration = 1500;
+                const start = 0;
+                const startTime = performance.now();
+                const isDecimal = target % 1 !== 0;
+                const unit = num.dataset.unit || '';
+
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    const current = start + (target - start) * easeProgress;
+
+                    if(isDecimal) {
+                        num.textContent = current.toFixed(2) + unit;
+                    } else {
+                        num.textContent = Math.floor(current) + unit;
+                    }
+
+                    if(progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        num.textContent = (isDecimal ? target.toFixed(2) : target) + unit;
+                    }
+                }
+                requestAnimationFrame(update);
+            });
+        }
+        // 当统计区块进入视口触发数字动画
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    animateNumbers();
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.hero-stats, .econ-grid, .highlight').forEach(el => {
+            statsObserver.observe(el);
+        });
+
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if(window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 返回顶部
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if(window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // 平滑滚动锚点
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if(target) {
+                    target.scrollTo({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 自定义光标逻辑
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorRing = document.querySelector('.cursor-ring');
+        let mouseX = 0, mouseY = 0;
+        let dotX = 0, dotY = 0;
+        let ringX = 0, ringY = 0;
+
+        // 鼠标移动监听
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // 平滑跟随动画
+        function animateCursor() {
+            // 中心点快速跟随
+            dotX += (mouseX - dotX) * 0.85;
+            dotY += (mouseY - dotY) * 0.85;
+            cursorDot.style.left = `${dotX}px`;
+            cursorDot.style.top = `${dotY}px`;
+
+            // 圆环慢速跟随，形成拖拽效果，降低延迟
+            ringX += (mouseX - ringX) * 0.28;
+            ringY += (mouseY - ringY) * 0.28;
+            cursorRing.style.left = `${ringX}px`;
+            cursorRing.style.top = `${ringY}px`;
+
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // 交互元素hover效果
+        const interactiveElements = document.querySelectorAll('a, button, .card, .history-card, .econ-card, .culture-card, .future-card, .stat, .overview-list li, .culture-list li, .traffic-list li, .section-num, .geo-box');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorRing.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorRing.classList.remove('hover');
+            });
+        });
+
+        // 深色背景区域光标颜色切换，适配所有深色背景区块，避免子元素移出时错误移除样式
+        const darkSections = document.querySelectorAll('.overview, footer, .highlight, .traffic-card, .future-card');
+        darkSections.forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                cursorDot.classList.add('dark');
+                cursorRing.classList.add('dark');
+            });
+            section.addEventListener('mouseleave', () => {
+                cursorDot.classList.remove('dark');
+                cursorRing.classList.remove('dark');
+            });
+        });
+
+        // 鼠标点击效果
+        document.addEventListener('mousedown', () => {
+            cursorDot.classList.add('active');
+            cursorRing.classList.add('active');
+        });
+        document.addEventListener('mouseup', () => {
+            cursorDot.classList.remove('active');
+            cursorRing.classList.remove('active');
+        });
+
+        // 鼠标离开页面隐藏光标
+        document.addEventListener('mouseleave', () => {
+            cursorDot.style.opacity = '0';
+            cursorRing.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursorDot.style.opacity = '1';
+            cursorRing.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>
