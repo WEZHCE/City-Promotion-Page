@@ -12,3 +12,6 @@
 - `shenzhen.html`：深圳城市宣传页
 
 下载并打开对应 HTML 文件即可预览。
+亦可访问下列网站体验 https://city-promotion-page.1827267356.workers.dev/
+                   https://city-promotion-page.vercel.app/
+                   https://wezhce.github.io/City-Promotion-Page/
