@@ -135,7 +135,29 @@
       overflow-y: auto;
       overscroll-behavior: contain;
       scrollbar-gutter: stable;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.48) rgba(255, 255, 255, 0.08);
       border-top: 1px solid var(--entry-line);
+    }
+
+    .document-list::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .document-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .document-list::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.48);
+      background-clip: content-box;
+    }
+
+    .document-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.72);
+      background-clip: content-box;
     }
 
     .document-link {
