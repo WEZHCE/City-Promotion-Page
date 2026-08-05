@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>香港 · 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --ink: #1a1814;
+            --paper: #f7f5f0;
+            --warm: #c4a35a;
+            --warm-light: #e8d9b0;
+            --rule: #d6d2c8;
+            --quiet: #7a7568;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Serif SC', 'Songti SC', 'Georgia', serif;
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--ink);
+            background: var(--ink);
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        * { cursor: none !important; }
+
+        .page {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 64px;
+            background: var(--paper);
+            min-height: 100vh;
+        }
+
+        /* === Custom Cursor === */
+        .cursor-dot {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            background: var(--warm);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, opacity 0.3s;
+            mix-blend-mode: multiply;
+        }
+
+        .cursor-ring {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1.5px solid var(--warm);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s ease, height 0.3s ease, border-color 0.3s, opacity 0.3s, background 0.3s;
+            opacity: 0.4;
+        }
+
+        .cursor-ring.hovering {
+            width: 72px;
+            height: 72px;
+            border-width: 2px;
+            opacity: 0.9;
+            background: rgba(196, 163, 90, 0.08);
+        }
+
+        .cursor-ring.clicking {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* === Scroll Progress === */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--warm), var(--warm-light));
+            z-index: 9999;
+            width: 0%;
+        }
+
+        /* === Navigation === */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9998;
+            padding: 20px 64px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .nav.scrolled {
+            background: rgba(247, 245, 240, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 14px 64px;
+            box-shadow: 0 1px 0 var(--rule);
+        }
+
+        .nav-logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-decoration: none;
+            color: var(--ink);
+            transition: color 0.3s, transform 0.3s;
+            display: inline-block;
+        }
+
+        .nav-logo:hover { color: var(--warm); transform: scale(1.05); }
+
+        .nav-links { display: flex; gap: 32px; list-style: none; }
+
+        .nav-links a {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--quiet);
+            position: relative;
+            padding: 8px 0;
+            transition: color 0.3s;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--warm);
+            transition: width 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .nav-links a:hover { color: var(--ink); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-links a.active { color: var(--warm); }
+        .nav-links a.active::after { width: 100%; }
+
+        /* === Layout === */
+        .page {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 64px;
+        }
+
+        /* === Hero Section === */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 120px 0 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(12rem, 30vw, 28rem);
+            font-weight: 900;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--rule);
+            white-space: nowrap;
+            pointer-events: none;
+            user-select: none;
+            letter-spacing: -0.05em;
+            will-change: transform;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: end;
+        }
+
+        .hero-title {
+            font-size: clamp(5rem, 12vw, 11rem);
+            font-weight: 400;
+            line-height: 0.85;
+            letter-spacing: -0.04em;
+            font-style: italic;
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+        }
+
+        .hero-title-line {
+            display: block;
+            overflow: hidden;
+        }
+
+        .hero-title-line span {
+            display: inline-block;
+        }
+
+        .hero-title-line .warm { color: var(--warm); }
+
+        .hero-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 16px;
+        }
+
+        .hero-meta-item {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--quiet);
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--rule);
+            padding-bottom: 8px;
+        }
+
+        .hero-meta-item .val {
+            color: var(--ink);
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* === Animated Numbers === */
+        .hero-meta-item .val .num {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .hero-meta-item:hover .val .num {
+            transform: scale(1.1);
+            color: var(--warm);
+        }
+
+        .js .count-up {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .js .count-up.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === Section Commons === */
+        .section {
+            padding: 100px 0;
+            border-top: 1px solid var(--rule);
+        }
+
+        .section-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--warm);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            font-style: italic;
+            margin-bottom: 48px;
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+        }
+
+        .section-title .warm { color: var(--warm); }
+
+        /* === Reveal Animations === */
+        .js .reveal {
+            opacity: 0;
+            transform: translateY(32px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .js .reveal.in { opacity: 1; transform: translateY(0); }
+
+        .js .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .js .reveal-left.in { opacity: 1; transform: translateX(0); }
+
+        .js .reveal-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .js .reveal-right.in { opacity: 1; transform: translateX(0); }
+
+        .js .reveal-scale {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .js .reveal-scale.in { opacity: 1; transform: scale(1); }
+
+        /* === Two Column Layout === */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+        }
+
+        .col-text p {
+            font-size: 1.05rem;
+            margin-bottom: 24px;
+            text-align: justify;
+        }
+
+        .col-text p:first-child::first-letter {
+            float: left;
+            font-size: 5rem;
+            line-height: 0.8;
+            padding: 8px 12px 0 0;
+            color: var(--warm);
+            font-weight: 700;
+            font-style: italic;
+        }
+
+        /* === Sidebar === */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .sidebar-card {
+            border: 1px solid var(--rule);
+            padding: 24px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform, border-color, background;
+        }
+
+        .sidebar-card:hover {
+            border-color: var(--warm);
+            background: rgba(196, 163, 90, 0.04);
+            transform: translateX(8px);
+        }
+
+        .sidebar-card .num {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--warm);
+            font-style: italic;
+            line-height: 1;
+        }
+
+        .sidebar-card .label {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--quiet);
+            margin-top: 4px;
+        }
+
+        .sidebar-card .desc {
+            font-size: 0.85rem;
+            color: var(--quiet);
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+
+        /* === Data Panel === */
+        .data-panel {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 80px;
+            margin: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--warm), transparent);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .data-item {
+            padding: 24px;
+            border-right: 1px solid rgba(255,255,255,0.12);
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .data-item:last-child { border-right: none; }
+        .data-item:hover { background: rgba(196, 163, 90, 0.06); }
+
+        .data-item .figure {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 400;
+            line-height: 1;
+            color: var(--warm);
+            font-style: italic;
+        }
+
+        .data-item .metric {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .data-item .context {
+            font-size: 0.85rem;
+            opacity: 0.75;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* === Timeline === */
+        .timeline {
+            position: relative;
+            padding-left: 64px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--warm), var(--rule));
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 48px;
+            padding-bottom: 48px;
+            border-bottom: 1px dashed var(--rule);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -52px;
+            top: 8px;
+            width: 14px;
+            height: 14px;
+            background: var(--warm);
+            border-radius: 50%;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .timeline-item:hover::before {
+            transform: scale(1.4);
+            box-shadow: 0 0 0 8px rgba(196, 163, 90, 0.15);
+        }
+
+        .timeline-year {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--warm);
+            font-style: italic;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .timeline-item:hover .timeline-title { color: var(--warm); }
+
+        .timeline-desc {
+            font-size: 0.95rem;
+            color: var(--quiet);
+            line-height: 1.7;
+        }
+
+        /* === Quote === */
+        .quote {
+            margin: 80px 0;
+            padding: 56px 64px;
+            border-left: 3px solid var(--warm);
+            background: linear-gradient(135deg, rgba(196, 163, 90, 0.05), transparent);
+            position: relative;
+        }
+
+        .quote::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 24px;
+            font-size: 6rem;
+            color: var(--warm);
+            opacity: 0.25;
+            font-style: normal;
+            line-height: 1;
+        }
+
+        .quote-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            line-height: 1.5;
+            color: var(--ink);
+        }
+
+        .quote-cite {
+            display: block;
+            margin-top: 20px;
+            font-size: 0.75rem;
+            font-style: normal;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--quiet);
+        }
+
+        /* === Three Column Cards === */
+        .three-col {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .card {
+            border: 1px solid var(--rule);
+            padding: 32px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--warm);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .card:hover { transform: translateY(-6px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+        .card:hover::before { transform: scaleX(1); }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--ink);
+            color: var(--paper);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        .card:hover .card-icon { background: var(--warm); transform: rotate(8deg); }
+
+        .card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            font-size: 0.88rem;
+            color: var(--quiet);
+            line-height: 1.65;
+        }
+
+        /* === List Section === */
+        .feature-list { list-style: none; }
+
+        .feature-item {
+            display: grid;
+            grid-template-columns: 56px 1fr;
+            gap: 24px;
+            padding: 28px 0;
+            border-bottom: 1px solid var(--rule);
+            align-items: baseline;
+            transition: padding 0.3s;
+        }
+
+        .feature-item:last-child { border-bottom: none; }
+        .feature-item:hover { padding-left: 12px; }
+
+        .feature-marker {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--warm);
+            font-style: italic;
+            transition: transform 0.3s;
+        }
+
+        .feature-item:hover .feature-marker { transform: scale(1.2) rotate(5deg); }
+
+        .feature-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .feature-content p {
+            font-size: 0.88rem;
+            color: var(--quiet);
+        }
+
+        /* === Stats Bar === */
+        .stat-row {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--rule);
+            gap: 16px;
+        }
+
+        .stat-row:last-child { border-bottom: none; }
+
+        .stat-label {
+            width: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .stat-bar-track {
+            flex: 1;
+            height: 8px;
+            background: var(--rule);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            height: 100%;
+            background: var(--warm);
+            width: 0%;
+            transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .stat-row.in .stat-bar-fill { width: var(--w); }
+
+        .stat-value {
+            width: 60px;
+            text-align: right;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        /* === Footer === */
+        .footer {
+            padding: 0;
+            margin-top: 0;
+            position: relative;
+            background: var(--ink);
+            width: 100%;
+            color: var(--paper);
+        }
+
+        .footer::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; bottom: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--warm), transparent);
+        }
+
+        .footer-hero {
+            background: var(--ink);
+            color: var(--paper);
+            padding: 100px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(196, 163, 90, 0.08), transparent 70%);
+            pointer-events: none;
+        }
+
+        .footer-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--warm), transparent);
+        }
+
+        .footer-quote {
+            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+            font-style: italic;
+            line-height: 1.4;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            position: relative;
+            z-index: 1;
+            font-family: 'Playfair Display', 'Noto Serif SC', serif;
+        }
+
+        .footer-quote::before {
+            content: '"';
+            position: absolute;
+            top: -40px;
+            left: -30px;
+            font-size: 8rem;
+            color: var(--warm);
+            opacity: 0.15;
+            font-style: normal;
+            line-height: 1;
+        }
+
+        .footer-divider {
+            width: 60px;
+            height: 1px;
+            background: var(--warm);
+            margin: 0 auto 32px;
+            opacity: 0.6;
+        }
+
+        .footer-signoff {
+            font-size: 0.75rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            position: relative;
+            z-index: 1;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0;
+            border-top: 1px solid var(--rule);
+        }
+
+        .footer-col {
+            padding: 48px 40px;
+            border-right: 1px solid var(--rule);
+        }
+
+        .footer-col:last-child { border-right: none; }
+
+        .footer-col h5 {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--warm);
+            margin-bottom: 16px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .footer-col ul { list-style: none; }
+
+        .footer-col li {
+            font-size: 0.88rem;
+            color: #cfcabc;
+            padding: 6px 0;
+            line-height: 1.6;
+        }
+
+        .footer-col li a {
+            color: #cfcabc;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-col li a:hover { color: var(--warm); }
+
+        .footer-col p {
+            font-size: 0.88rem;
+            color: #cfcabc;
+            line-height: 1.7;
+        }
+
+        .footer-bottom {
+            padding: 34px 40px 50px;
+            border-top: 1px solid var(--rule);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .footer-bottom .brand {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            color: var(--warm);
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-bottom .mark {
+            width: 10px;
+            height: 22px;
+            background: var(--warm);
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .footer-bottom .brand:hover .mark { transform: scaleY(1.25); }
+
+        .footer-bottom .copy {
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #b9b3a6;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .footer-bottom .copy .dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--warm);
+            display: inline-block;
+        }
+
+        @media (max-width: 1024px) {
+            .footer-links { grid-template-columns: 1fr; }
+            .footer-col { border-right: none; border-bottom: 1px solid var(--rule); }
+            .footer-col:last-child { border-bottom: none; }
+        }
+
+        @media (max-width: 640px) {
+            .footer-hero { padding: 60px 24px; }
+            .footer-stats { grid-template-columns: 1fr; }
+            .footer-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+            .footer-stat:last-child { border-bottom: none; }
+            .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+        }
+
+        /* === Back to Top === */
+        .back-top {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 48px;
+            height: 48px;
+            background: var(--ink);
+            color: var(--paper);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 9997;
+        }
+
+        .back-top.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .back-top:hover {
+            background: var(--warm);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(196, 163, 90, 0.4);
+        }
+
+        /* === Magnetic Elements === */
+        .magnetic { transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+
+        /* === Responsive === */
+        @media (max-width: 1024px) {
+            .page { padding: 0 32px; }
+            .nav { padding: 16px 32px; }
+            .nav.scrolled { padding: 12px 32px; }
+            .hero-content { grid-template-columns: 1fr; gap: 32px; }
+            .two-col { grid-template-columns: 1fr; gap: 48px; }
+            .three-col { grid-template-columns: 1fr; }
+            .data-panel { padding: 40px; }
+            .data-grid { grid-template-columns: repeat(2, 1fr); }
+            .data-item:nth-child(2) { border-right: none; }
+            .data-item:nth-child(1), .data-item:nth-child(2) { border-bottom: 1px solid rgba(255,255,255,0.12); }
+        }
+
+        @media (max-width: 640px) {
+            .page { padding: 0 20px; }
+            .nav { padding: 12px 20px; }
+            .nav.scrolled { padding: 10px 20px; }
+            .nav-links { gap: 14px; }
+            .nav-links a { font-size: 0.62rem; letter-spacing: 0.1em; }
+            .hero { min-height: auto; padding: 100px 0 60px; }
+            .hero-bg-text { font-size: 8rem; }
+            .data-grid { grid-template-columns: 1fr; }
+            .data-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.12); }
+            .data-item:last-child { border-bottom: none; }
+            .quote { padding: 32px; }
+            .timeline { padding-left: 40px; }
+            .timeline-item::before { left: -34px; width: 10px; height: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- Navigation -->
+    <nav class="nav" id="navbar">
+        <a href="#" class="nav-logo">HK</a>
+        <ul class="nav-links">
+            <li><a href="#intro" class="nav-link active">概览</a></li>
+            <li><a href="#economy" class="nav-link">经济</a></li>
+            <li><a href="#history" class="nav-link">历程</a></li>
+            <li><a href="#culture" class="nav-link">文化</a></li>
+            <li><a href="#city" class="nav-link">城市</a></li>
+            <li><a href="#edu" class="nav-link">教育</a></li>
+            <li><a href="#future" class="nav-link">未来</a></li>
+        </ul>
+    </nav>
+
+    <!-- Back to Top -->
+    <button class="back-top" id="backTop">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+
+    <div class="page">
+
+        <!-- Hero -->
+        <section class="hero" id="intro">
+            <div class="hero-bg-text" id="heroBg">HK</div>
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="hero-title-line"><span>香港</span></span>
+                    <span class="hero-title-line"><span class="warm">HONG KONG</span></span>
+                </h1>
+                <div class="hero-meta">
+                    <div class="hero-meta-item">
+                        <span>陆地面积</span>
+                        <span class="val"><span class="count-up" data-num="1114" data-suffix=" km²" data-decimals="2">0</span></span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span>人口 2025</span>
+                        <span class="val">~<span class="count-up" data-num="750" data-suffix="万">0</span></span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span>GDP 2025</span>
+                        <span class="val"><span class="count-up" data-num="3329" data-suffix="亿$" data-decimals="1">0</span></span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span>人均GDP</span>
+                        <span class="val"><span class="count-up" data-num="444044" data-suffix="$">0</span></span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span>全球金融</span>
+                        <span class="val">第<span class="count-up" data-num="3" data-suffix="位">0</span></span>
+                    </div>
+                    <div class="hero-meta-item">
+                        <span>郊野覆盖</span>
+                        <span class="val"><span class="count-up" data-num="40" data-suffix="%">0</span></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Intro Section -->
+        <section class="section">
+            <div class="section-label reveal">第一章</div>
+            <h2 class="section-title reveal">一座城市的<span class="warm">复杂</span>与<span class="warm">矛盾</span></h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p class="reveal">香港从来不是一座简单的城市。它是殖民历史与民族复兴的交汇点，是资本主义市场逻辑与社会主义主权伦理的实验场，是粤语文化圈面向国际的代言人。从1841年英国军舰在尖沙咀登陆的那一刻起，这座城市就被裹挟进大国博弈的漩涡之中，至今未已。</p>
+                    <p class="reveal">回归二十八年后的今天，香港面临着前所未有的结构性转型。粤港澳大湾区框架下的"北部都会区"规划，意味着这座长期向南维多利亚港倾斜的城市，将首次把发展重心转向北方边境。国际创新科技中心的定位，标志着香港必须摆脱对金融和地产的双重依赖，在人工智能、生命健康、新能源等新兴领域寻找新的增长极。</p>
+                    <p class="reveal">然而，香港真正的魅力从来不在于经济数据的起伏，而在于其独特的城市肌理：在不足1,115平方公里的土地上，40%被郊野公园覆盖，摩天大楼与原始山林之间往往只隔着一条巴士线路；粤语、英语、普通话在街头自然切换，茶餐厅的菠萝包与米其林的法式料理共享同一条美食街。</p>
+                </div>
+                <aside class="sidebar">
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">261</div>
+                        <div class="label">岛屿数量</div>
+                        <div class="desc">面积500m²以上的离岛，包括大屿山、南丫岛、长洲、坪洲等。</div>
+                    </div>
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">6,870</div>
+                        <div class="label">人/km² 密度</div>
+                        <div class="desc">全球人口密度最高的城市之一，但40%土地为郊野公园。</div>
+                    </div>
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">24</div>
+                        <div class="label">郊野公园</div>
+                        <div class="desc">加上22个特别地区，构成全球最密集的城市郊野网络。</div>
+                    </div>
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">12,000+</div>
+                        <div class="label">餐厅数量</div>
+                        <div class="desc">从街头鱼蛋到米其林星级，全球最密集的优质餐饮网络。</div>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <!-- Economy Section -->
+        <section class="section" id="economy">
+            <div class="section-label reveal">第二章</div>
+            <h2 class="section-title reveal">自由市场的<span class="warm">当代</span>样本</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p class="reveal">香港经济的四大支柱——金融服务、贸易及物流、专业服务、旅游业——合计贡献了本地生产总值的六成以上。2025年，香港金融业增加值占GDP约23%，是当之无愧的核心引擎。作为全球第七大股票市场和最大离岸人民币中心，香港管理着超过30万亿港元的资产。</p>
+                    <p class="reveal">然而，单一的经济结构也使香港极易受到外部冲击。2025年，面对全球利率高企和地缘政治紧张，香港特区政府提出"北部都会区"规划，在接壤深圳的300平方公里土地上，规划科技创新、高端教育和新兴产业用地，力图改变长期以来"南重北轻"的城市格局。</p>
+                </div>
+                <div>
+                    <p class="section-label reveal" style="margin-bottom: 20px;">四大支柱占GDP比重</p>
+                    <div class="stat-row reveal">
+                        <span class="stat-label">金融服务</span>
+                        <div class="stat-bar-track"><div class="stat-bar-fill" style="--w: 23%"></div></div>
+                        <span class="stat-value">23%</span>
+                    </div>
+                    <div class="stat-row reveal">
+                        <span class="stat-label">贸易物流</span>
+                        <div class="stat-bar-track"><div class="stat-bar-fill" style="--w: 19%"></div></div>
+                        <span class="stat-value">19%</span>
+                    </div>
+                    <div class="stat-row reveal">
+                        <span class="stat-label">专业服务</span>
+                        <div class="stat-bar-track"><div class="stat-bar-fill" style="--w: 12%"></div></div>
+                        <span class="stat-value">12%</span>
+                    </div>
+                    <div class="stat-row reveal">
+                        <span class="stat-label">旅游业</span>
+                        <div class="stat-bar-track"><div class="stat-bar-fill" style="--w: 5%"></div></div>
+                        <span class="stat-value">5%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Panel -->
+        <div class="data-panel" id="dataPanel">
+            <div class="data-grid">
+                <div class="data-item reveal">
+                    <div class="figure" data-count="3329">0</div>
+                    <div class="metric">亿港元 GDP</div>
+                    <div class="context">2025年本地生产总值，同比增长3.6%</div>
+                </div>
+                <div class="data-item reveal">
+                    <div class="figure" data-count="444044">0</div>
+                    <div class="metric">港元 人均GDP</div>
+                    <div class="context">约56,800美元，亚洲前列</div>
+                </div>
+                <div class="data-item reveal">
+                    <div class="figure" data-count="2.8" data-decimal>0</div>
+                    <div class="metric">失业率</div>
+                    <div class="context">2025年疫后低位，劳动市场稳健</div>
+                </div>
+                <div class="data-item reveal">
+                    <div class="figure">5th</div>
+                    <div class="metric">全球贸易体</div>
+                    <div class="context">连续多年被评全球最自由经济体</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <section class="section" id="history">
+            <div class="section-label reveal">第三章</div>
+            <h2 class="section-title reveal">一百八十年的<span class="warm">沧桑</span>巨变</h2>
+            <div class="timeline">
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">1841</div>
+                    <h3 class="timeline-title">英殖开埠</h3>
+                    <p class="timeline-desc">第一次鸦片战争后，英国迫使清政府签订《南京条约》，1841年1月26日英军在香港岛登陆。自由港政策吸引欧美商贾，转口贸易迅速兴起，香港从渔村蜕变为远东商埠。</p>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">1949</div>
+                    <h3 class="timeline-title">工业起飞</h3>
+                    <p class="timeline-desc">上海及华南资本与技术南迁，纺织、制衣、塑胶工业蓬勃发展。六七十年代跻身"亚洲四小龙"，制造业创造经济奇迹，港产品出口遍及全球。</p>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">1984</div>
+                    <h3 class="timeline-title">中英联合声明</h3>
+                    <p class="timeline-desc">两国政府在北京签署联合声明，确认1997年7月1日香港回归中国，实行"一国两制"、"港人治港"、高度自治，奠定宪制基础。</p>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">1997</div>
+                    <h3 class="timeline-title">回归祖国</h3>
+                    <p class="timeline-desc">香港特别行政区成立，董建华出任首任行政长官。《基本法》实施，保持资本主义制度50年不变，延续法治与自由港地位。亚洲金融危机、SARS接连冲击，香港在中央支持下渡过难关。</p>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">2003</div>
+                    <h3 class="timeline-title">CEPA签署</h3>
+                    <p class="timeline-desc">《内地与香港关于建立更紧密经贸关系的安排》签署，内地居民赴港个人游启动，大陆市场向香港服务业全面开放，两地经济融合加速。</p>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">2014</div>
+                    <h3 class="timeline-title">互联互通</h3>
+                    <p class="timeline-desc">沪港通启动，此后深港通、债券通相继落地，香港成为全球最大离岸人民币业务枢纽，金融市场与内地深度融合。</p>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">2019</div>
+                    <h3 class="timeline-title">修例风波</h3>
+                    <p class="timeline-desc">修订《逃犯条例》引发持续社会动荡，社会撕裂严重。2020年《香港国安法》实施，社会秩序逐步恢复，"一国两制"实践重回正轨。</p>
+                </div>
+                <div class="timeline-item reveal-left">
+                    <div class="timeline-year">2025</div>
+                    <h3 class="timeline-title">深度转型</h3>
+                    <p class="timeline-desc">粤港澳大湾区建设加速，北部都会区规划出台。香港GDP达3,329.8亿港元，国际金融中心地位巩固，向国际创新科技中心迈进。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quote -->
+        <blockquote class="quote reveal-scale">
+            <p class="quote-text">"香港的优势在于其制度活力——普通法体系、自由港地位、资金自由流动、普通话说得越来越好的专业人士。这座城市的自我修复能力，在过去一百八十年的每一次危机中都得到了验证。"</p>
+            <cite class="quote-cite">— 国际评级机构对香港营商环境的评估</cite>
+        </blockquote>
+
+        <!-- Culture Section -->
+        <section class="section" id="culture">
+            <div class="section-label reveal">第四章</div>
+            <h2 class="section-title reveal">中西交汇的<span class="warm">文化</span>熔炉</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p class="reveal">香港的文化身份从来不是单一的。它是岭南文化的国际延伸，是殖民历史的活遗存，也是全球化都市主义的试验场。粤语与英语同为法定语言，88.2%人口日常使用粤语，4.6%使用英语，2.3%使用普通话——这种语言多样性，使香港长期担任中国与世界之间的文化翻译者。</p>
+                    <p class="reveal">香港电影产量在八九十年代曾冠绝全球，功夫片、黑帮警匪片、喜剧片风靡亚洲。李小龙、成龙、周润发、王家卫等电影人影响遍及全球，香港电影金像奖是华语影坛最具分量奖项之一。粤语流行曲自七十年代兴起，许冠杰开创粤语流行先河，张国荣、梅艳芳、Beyond等将港乐推向全盛。</p>
+                </div>
+                <div class="col-text">
+                    <p class="reveal">节庆文化同样体现这种混杂性。长洲太平清醮、大坑舞火龙、盂兰胜会等列入国家级非物质文化遗产。中秋国庆烟花、新年花车巡游、端午龙舟竞渡，中西节庆在紧凑的城市空间中共存共荣。</p>
+                    <p class="reveal">在视觉文化方面，融合中式底蕴与英式现代感的港式设计独树一帜。Victoria Harbour天际线、霓虹招牌美学、包豪斯风格公屋，构成视觉文化的独特谱系。M+博物馆与香港故宫文化博物馆的落成，重塑了当代艺文景观。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Culture Cards -->
+        <div class="three-col" style="margin-top: 48px;">
+            <div class="card reveal">
+                <div class="card-icon">粤</div>
+                <h4>两文三语</h4>
+                <p>中文与英文同为法定语言，粤语、英语、普通话构成日常沟通基底，使香港成为中国与世界之间的文化桥梁。</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">影</div>
+                <h4>电影王国</h4>
+                <p>八九十年代港产片年产量逾三百部，功夫片、黑帮警匪片风靡亚洲，李小龙、成龙、王家卫等享誉国际。</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">乐</div>
+                <h4>粤语流行</h4>
+                <p>自七十年代兴起，许冠杰开创粤语流行先河，张国荣、梅艳芳、Beyond等将港乐推向全盛，影响遍及华人世界。</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">庙</div>
+                <h4>节庆传承</h4>
+                <p>长洲太平清醮、大坑舞火龙等列入国家级非遗。中秋烟花、端午龙舟，中西节庆和谐共存。</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">食</div>
+                <h4>美食之都</h4>
+                <p>超过12,000家餐厅，从街头鱼蛋、鸡蛋仔到米其林星级粤菜，香港拥有全球最密集的优质餐饮网络。</p>
+            </div>
+            <div class="card reveal">
+                <div class="card-icon">艺</div>
+                <h4>当代艺术</h4>
+                <p>M+博物馆与香港故宫文化博物馆重塑艺文景观，Art Basel等国际展会使香港成为亚洲艺术品交易重镇。</p>
+            </div>
+        </div>
+
+        <!-- City Section -->
+        <section class="section" id="city">
+            <div class="section-label reveal">第五章</div>
+            <h2 class="section-title reveal">垂直城市的<span class="warm">空间</span>奇观</h2>
+            <ul class="feature-list">
+                <li class="reveal">
+                    <span class="feature-marker">维多利亚港</span>
+                    <div class="feature-content">
+                        <h4>世界三大夜景之一</h4>
+                        <p>两岸天际线汇聚超过400栋摩天大楼，每晚《幻彩咏香江》以维港为舞台，结合逾40栋建筑的灯光与音乐，展现东方之珠的璀璨夜色。</p>
+                    </div>
+                </li>
+                <li class="reveal">
+                    <span class="feature-marker">太平山顶</span>
+                    <div class="feature-content">
+                        <h4>海拔552米的观景台</h4>
+                        <p>1888年通车的山顶缆车是现存最古老的机动公共交通工具，凌霄阁观景台可俯瞰维港全景与九龙半岛。</p>
+                    </div>
+                </li>
+                <li class="reveal">
+                    <span class="feature-marker">M+博物馆</span>
+                    <div class="feature-content">
+                        <h4>亚洲首座全球当代视觉文化博物馆</h4>
+                        <p>由赫尔佐格与德梅隆设计，馆藏涵盖视觉艺术、设计、建筑及流动影像，是香港西九文化区的核心地标。</p>
+                    </div>
+                </li>
+                <li class="reveal">
+                    <span class="feature-marker">香港迪士尼</span>
+                    <div class="feature-content">
+                        <h4>全球首座魔雪奇缘主题园区</h4>
+                        <p>2023年开幕的"世界之巅"将动画IP转化为沉浸式体验，是香港旅游业复苏的旗舰项目。</p>
+                    </div>
+                </li>
+                <li class="reveal">
+                    <span class="feature-marker">天坛大佛</span>
+                    <div class="feature-content">
+                        <h4>全球最高户外青铜坐佛</h4>
+                        <p>位于大屿山宝莲禅寺前，高34米、重250吨，268级石阶是香港最重要的佛教文化景点。</p>
+                    </div>
+                </li>
+                <li class="reveal">
+                    <span class="feature-marker">黄大仙祠</span>
+                    <div class="feature-content">
+                        <h4>香港最灵验的庙宇</h4>
+                        <p>供奉黄初平仙师，以"有求必应"闻名。农历年三十夜万人空巷上头柱香，是香港民间信仰文化的缩影。</p>
+                    </div>
+                </li>
+                <li class="reveal">
+                    <span class="feature-marker">海洋公园</span>
+                    <div class="feature-content">
+                        <h4>集保育与娱乐于一体</h4>
+                        <p>1977年开业，近年转型为结合娱乐、教育和保育的综合度假区，"寻鲨探秘"和"水上乐园"深受游客欢迎。</p>
+                    </div>
+                </li>
+            </ul>
+        </section>
+
+        <!-- Education Section -->
+        <section class="section" id="edu">
+            <div class="section-label reveal">第六章</div>
+            <h2 class="section-title reveal">亚洲<span class="warm">高等</span>教育的重镇</h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p class="reveal">香港是亚洲高等教育最密集的城市之一。根据QS 2026世界大学排名，香港大学（#27）、中文大学与科技大学（并列#47）、理工大学（#54）和城大（#68）五所高校进入全球百强。香港大学医学院在新冠疫情期间的研究成果享誉国际，科大孵化的大疆创新成为全球最大的消费级无人机制造商。</p>
+                    <p class="reveal">2025年，香港特区政府推出"杰出创科学人计划"，斥资300亿港元吸引全球顶尖科研人才。InnoHK创新平台已设立28所研发实验室，聚焦医疗科技和人工智能。河套深港科技创新合作区——占地87公顷、横跨香港与深圳的特殊区域——被视为大湾区科技创新的"试验田"。</p>
+                </div>
+                <div>
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">#27</div>
+                        <div class="label">香港大学 HKU</div>
+                        <div class="desc">1911年创立，被誉为"亚洲常春藤"，医学、法学、商学居亚洲顶尖。</div>
+                    </div>
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">#47</div>
+                        <div class="label">中文大学 CUHK</div>
+                        <div class="desc">1963年创立，独特的书院制，人工智能与生物医学居世界前列。</div>
+                    </div>
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">#47</div>
+                        <div class="label">科技大学 HKUST</div>
+                        <div class="desc">1991年创办，以商科和工科见长，孵化大疆创新等知名企业。</div>
+                    </div>
+                    <div class="sidebar-card reveal-right">
+                        <div class="num">#54</div>
+                        <div class="label">理工大学 PolyU</div>
+                        <div class="desc">1937年创立，以应用科研著称，太空科技、时装设计领先国际。</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Future Section -->
+        <section class="section" id="future">
+            <div class="section-label reveal">第七章</div>
+            <h2 class="section-title reveal">下一个三十年的<span class="warm">想象</span></h2>
+            <div class="two-col">
+                <div class="col-text">
+                    <p class="reveal">站在2026年的门槛上，香港面临的挑战与机遇并存。粤港澳大湾区框架下，深圳前海、广州南沙、横琴粤澳深度合作区正在重塑区域经济地理。香港能否在保持独特优势的同时深度融入国家发展大局，是其未来命运的关键。</p>
+                    <p class="reveal">"北部都会区"规划是这一转型的空间载体。在这片接壤深圳的300平方公里土地上，香港规划了科技创新、高端教育和新兴产业用地，力图改变长期以来"南重北轻"的城市格局。河套深港科技创新合作区将成为大湾区科技创新的重要引擎。</p>
+                    <p class="reveal">在国际层面，香港作为连接中国内地与全球市场的"超级联系人"角色依然不可替代。随着人民币国际化进程加速，香港作为最大离岸人民币业务枢纽的地位将进一步巩固。同时，绿色金融、数字资产等新兴领域也为香港金融市场开辟了新的增长空间。</p>
+                </div>
+                <div class="col-text">
+                    <p class="reveal">然而，香港也面临着深层次的社会挑战。住房短缺、贫富悬殊、青年向上流动困难等结构性问题亟待解决。如何将经济成果更公平地分配给各阶层社会成员，是维持长期繁荣稳定的关键。</p>
+                    <p class="reveal">在文化层面，香港的身份认同仍在持续演变中。如何在"一国"与"两制"之间找到新的平衡点，既保持国际化特色又融入国家发展大局，需要政治智慧和社会共识。这座城市的下一个三十年，将是对"一国两制"实践成熟度的一次深度检验。</p>
+                    <p class="reveal">无论如何，香港的故事远未结束。这座见证了殖民屈辱与民族复兴的城市，将继续以其特有的韧性和活力，在中国式现代化的进程中扮演独特角色。维多利亚港的灯火依旧璀璨，而它所照亮的，是一个仍在书写中的未来。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Closing -->
+    </div>
+
+    <footer class="footer">
+        <div class="footer-hero">
+                <p class="footer-quote">"一座城市的伟大，不在于它拥有多少，而在于它成为什么。香港的故事，远没有结束。"</p>
+                <div class="footer-divider"></div>
+                <div class="footer-signoff">香港 · HONG KONG SAR · 2026</div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-col">
+                    <h5>数据来源</h5>
+                    <ul>
+                        <li>香港特别行政区政府</li>
+                        <li>政府统计处</li>
+                        <li>香港金融管理局</li>
+                        <li>国际金融中心报告</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>参考文献</h5>
+                    <ul>
+                        <li>2025年施政报告</li>
+                        <li>香港统计月刊</li>
+                        <li>北部都会区规划</li>
+                        <li>粤港澳大湾区纲要</li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h5>关于本文</h5>
+                    <p>本文以瑞士国际主义平面设计风格呈现，数据截至2025年，2026年8月整理发布。</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span class="brand"><i class="mark"></i>香港</span>
+                <span class="copy"><span class="dot"></span>© 2026 · 城市档案 · HK SAR<span class="dot"></span>Swiss International Style</span>
+            </div>
+        </footer>
+
+    <script>
+        document.documentElement.classList.add('js');
+
+        // === Custom Cursor ===
+        const cursorDot = document.getElementById('cursorDot');
+        const cursorRing = document.getElementById('cursorRing');
+        let mx = 0, my = 0, dx = 0, dy = 0, rx = 0, ry = 0;
+
+        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+        function loop() {
+            dx += (mx - dx) * 0.9;
+            dy += (my - dy) * 0.9;
+            cursorDot.style.left = dx + 'px';
+            cursorDot.style.top = dy + 'px';
+            rx += (mx - rx) * 0.25;
+            ry += (my - ry) * 0.25;
+            cursorRing.style.left = rx + 'px';
+            cursorRing.style.top = ry + 'px';
+            requestAnimationFrame(loop);
+        }
+        loop();
+
+        // Cursor states
+        document.querySelectorAll('a, button, .data-item, .timeline-item, .card, .sidebar-card, .feature-item, .stat-row').forEach(el => {
+            el.addEventListener('mouseenter', () => cursorRing.classList.add('hovering'));
+            el.addEventListener('mouseleave', () => cursorRing.classList.remove('hovering'));
+        });
+
+        document.addEventListener('mousedown', () => cursorRing.classList.add('clicking'));
+        document.addEventListener('mouseup', () => cursorRing.classList.remove('clicking'));
+
+        document.addEventListener('mouseleave', () => { cursorDot.style.opacity = '0'; cursorRing.style.opacity = '0'; });
+        document.addEventListener('mouseenter', () => { cursorDot.style.opacity = '1'; cursorRing.style.opacity = '0.4'; });
+
+        // === Scroll Progress ===
+        const sp = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', () => {
+            sp.style.width = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100) + '%';
+        });
+
+        // === Nav Scroll ===
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 80); });
+
+        // === Back to Top ===
+        const bt = document.getElementById('backTop');
+        window.addEventListener('scroll', () => { bt.classList.toggle('in', window.scrollY > 600); });
+        bt.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // === Smooth Scroll ===
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => {
+                e.preventDefault();
+                const t = document.querySelector(a.getAttribute('href'));
+                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // === Active Nav ===
+        const sections = document.querySelectorAll('section, .data-panel');
+        const navLinks = document.querySelectorAll('.nav-link');
+        window.addEventListener('scroll', () => {
+            let cur = '';
+            sections.forEach(s => { if (window.scrollY >= s.offsetTop - 150) cur = s.id; });
+            navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + cur));
+        });
+
+        // === Reveal on Scroll ===
+        const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+        const revealObs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        revealEls.forEach(el => revealObs.observe(el));
+
+        // === Stat Bars ===
+        const statObs = new IntersectionObserver(entries => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.stat-row').forEach(el => statObs.observe(el));
+
+        // === Hero Meta Count-Up ===
+        const heroCounters = document.querySelectorAll('.hero-meta .count-up');
+        const heroCountObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                const el = e.target;
+                const target = parseFloat(el.dataset.num);
+                const suffix = el.dataset.suffix || '';
+                const decimals = parseInt(el.dataset.decimals) || 0;
+                const start = performance.now();
+                const dur = 1800;
+                function tick(now) {
+                    const p = Math.min((now - start) / dur, 1);
+                    const ease = 1 - Math.pow(1 - p, 4);
+                    const val = target * ease;
+                    let display;
+                    if (decimals > 0) {
+                        display = val.toFixed(decimals);
+                    } else {
+                        display = Math.floor(val).toLocaleString();
+                    }
+                    el.textContent = display + suffix;
+                    if (p < 1) requestAnimationFrame(tick);
+                }
+                requestAnimationFrame(tick);
+                el.classList.add('in');
+                heroCountObs.unobserve(el);
+            });
+        }, { threshold: 0.3 });
+        heroCounters.forEach(el => heroCountObs.observe(el));
+
+        // === Number Counter ===
+        const counterObs = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (!e.isIntersecting) return;
+                const el = e.target;
+                const target = parseFloat(el.dataset.count);
+                const dec = el.dataset.decimal !== undefined;
+                const start = performance.now();
+                const dur = 2000;
+                function tick(now) {
+                    const p = Math.min((now - start) / dur, 1);
+                    const ease = 1 - Math.pow(1 - p, 3);
+                    const val = target * ease;
+                    el.textContent = dec ? val.toFixed(1) : Math.floor(val).toLocaleString();
+                    if (p < 1) requestAnimationFrame(tick);
+                    else el.textContent = dec ? target.toFixed(1) : target.toLocaleString();
+                }
+                requestAnimationFrame(tick);
+                counterObs.unobserve(el);
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.figure[data-count]').forEach(el => counterObs.observe(el));
+
+        // === Hero Parallax ===
+        const heroBg = document.getElementById('heroBg');
+        window.addEventListener('scroll', () => {
+            const s = window.scrollY;
+            if (s < window.innerHeight) {
+                heroBg.style.transform = `translate(-50%, calc(-50% + ${s * 0.4}px))`;
+                heroBg.style.opacity = 1 - s / window.innerHeight;
+            }
+        });
+
+        // === Magnetic Buttons ===
+        document.querySelectorAll('.nav-links a, .back-top').forEach(btn => {
+            btn.addEventListener('mousemove', e => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
+            btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+        });
+
+        // === Card Tilt on Mousemove ===
+        document.querySelectorAll('.card, .sidebar-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = `perspective(1000px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) translateY(-6px)`;
+            });
+            card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+        });
+
+        // === Timeline Dot Pulse ===
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                const dot = item.querySelector('.timeline-item::before');
+                item.style.setProperty('--dot-scale', '1.5');
+            });
+        });
+
+        // === Data Item Glow Follow ===
+        document.querySelectorAll('.data-item').forEach(item => {
+            item.addEventListener('mousemove', e => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                item.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(196,163,90,0.12), transparent)`;
+            });
+            item.addEventListener('mouseleave', () => { item.style.background = ''; });
+        });
+
+        // === Sidebar Card Stagger Hover ===
+        document.querySelectorAll('.sidebar').forEach(sb => {
+            sb.addEventListener('mouseenter', () => {
+                sb.querySelectorAll('.sidebar-card').forEach((c, i) => {
+                    c.style.transitionDelay = (i * 50) + 'ms';
+                });
+            });
+        });
+
+        // === Feature List Slide ===
+        document.querySelectorAll('.feature-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.borderBottomColor = 'var(--warm)';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.borderBottomColor = 'var(--rule)';
+            });
+        });
+    </script>
+
+</body>
+</html>
