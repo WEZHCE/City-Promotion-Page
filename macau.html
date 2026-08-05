@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MACAU — 咩记</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --ink: #111111;
+            --paper: #FAFAF7;
+            --blue: #0B4DA2;
+            --white: #FFFFFF;
+            --line: #D8D8D2;
+            --muted: #6B6B64;
+            --sans: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--sans);
+            background: var(--paper);
+            color: var(--ink);
+            line-height: 1.8;
+            font-size: 15px;
+            -webkit-font-smoothing: antialiased;
+            display: grid;
+            grid-template-columns: 1fr 3.8fr;
+        }
+
+        ::selection { background: var(--blue); color: var(--white); }
+
+        /* ===== 左侧固定边栏 ===== */
+        aside {
+            position: sticky; top: 0; height: 100vh;
+            background: var(--ink); color: var(--white);
+            padding: clamp(28px, 4vw, 44px) clamp(20px, 3vw, 36px);
+            display: flex; flex-direction: column;
+            overflow-y: auto;
+        }
+        aside .logo {
+            font-size: clamp(22px, 3.1vw, 34px); font-weight: 900; letter-spacing: -0.02em;
+            line-height: 1; text-transform: uppercase;
+        }
+        aside .logo span { color: var(--blue); }
+        aside .cname { font-size: clamp(11px, 1.3vw, 14px); letter-spacing: 6px; margin-top: 6px; color: var(--line); }
+        aside .rule { width: 100%; height: 2px; background: var(--blue); margin: clamp(22px, 3vw, 32px) 0; }
+        aside nav a {
+            display: flex; gap: clamp(10px, 1.5vw, 16px); align-items: baseline;
+            color: var(--line); text-decoration: none;
+            font-size: clamp(11px, 1.3vw, 14px); letter-spacing: 1px;
+            padding: clamp(6px, 0.7vw, 8px) 0; border-bottom: 1px solid #2E2E2E;
+            transition: color 0.2s;
+        }
+        aside nav a:hover { color: var(--white); }
+        aside nav a b { color: var(--blue); font-family: var(--sans); }
+        aside .foot { margin-top: auto; font-size: clamp(9px, 1vw, 11px); letter-spacing: 2px; color: #777; line-height: 2; }
+
+        /* ===== 主体 ===== */
+        main { min-width: 0; }
+        .wrap { padding: 0 clamp(28px, 8vw, 120px); }
+
+        /* hero */
+        .hero { padding: 84px clamp(24px, 6vw, 64px) 56px; max-width: 1120px; margin: 0 auto; width: 100%; }
+        .hero .kicker {
+            display: flex; align-items: center; gap: 14px;
+            font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--muted);
+        }
+        .hero .kicker i { width: 42px; height: 4px; background: var(--blue); display: inline-block; }
+        .hero h1 {
+            font-size: clamp(84px, 15vw, 170px);
+            font-weight: 900; line-height: 0.82; letter-spacing: -0.05em;
+            text-transform: uppercase; margin-top: 26px;
+        }
+        .hero .zh {
+            font-size: clamp(36px, 7vw, 72px); font-weight: 900; letter-spacing: 0.1em;
+            margin-top: 10px; color: var(--blue);
+        }
+        .hero p {
+            margin-top: 44px; max-width: 60ch; font-size: 16px; color: var(--muted);
+        }
+        .hero p strong { color: var(--ink); }
+
+        /* 数据横幅 */
+        .strip {
+            border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink);
+            margin: 0 auto 72px; max-width: 1120px;
+            display: grid; grid-template-columns: repeat(4, 1fr);
+        }
+        .strip .cell { padding: 26px 18px; border-right: 1px solid var(--line); }
+        .strip .cell:last-child { border-right: none; }
+        .strip .cell:nth-child(2) { background: var(--blue); color: var(--white); }
+        .strip .n { font-size: clamp(30px, 4vw, 46px); font-weight: 900; line-height: 1; }
+        .strip .n small { font-size: 0.5em; font-weight: 700; }
+        .strip .d { font-size: 11px; letter-spacing: 1.5px; color: var(--muted); margin-top: 10px; }
+        .strip .cell:nth-child(2) .d { color: rgba(255,255,255,0.7); }
+
+        /* 章节 */
+        .chapter { padding: 0 clamp(24px, 6vw, 64px) 84px; position: relative; max-width: 1120px; margin: 0 auto; width: 100%; }
+        .chapter::before {
+            content: attr(data-no);
+            position: absolute; right: clamp(24px, 6vw, 64px);
+            top: -8px; font-size: 120px; font-weight: 900; color: #EFECE6;
+            line-height: 1; z-index: 0;
+        }
+        .chapter > * { position: relative; z-index: 1; }
+        .chapter h2 {
+            font-size: clamp(26px, 3.4vw, 40px); font-weight: 900; line-height: 1.2;
+            margin-bottom: 8px; letter-spacing: -0.01em;
+        }
+        .chapter .en {
+            font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--blue); font-weight: 700;
+            display: block; margin-bottom: 34px;
+        }
+        .chapter p { max-width: 60ch; margin-bottom: 1.3em; }
+        .chapter .lead { font-size: 17px; color: var(--muted); }
+        .chapter .hl { color: var(--blue); font-weight: 800; }
+        .chapter .bar { width: 64px; height: 5px; background: var(--blue); margin-bottom: 26px; }
+
+        /* 数量卡 */
+        .figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; margin-top: 34px; }
+        .fig { border: 1px solid var(--line); background: var(--white); padding: 22px 20px; }
+        .fig .bignum { font-size: 34px; font-weight: 900; color: var(--blue); line-height: 1; }
+        .fig .cap { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+        /* 双栏 */
+        .two { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+        @media (max-width: 900px) { .two { grid-template-columns: 1fr; } }
+
+        /* 景点列表 */
+        .spots { list-style: none; border-top: 2px solid var(--ink); margin-top: 30px; }
+        .spots li {
+            display: flex; gap: 22px; align-items: baseline;
+            padding: 16px 4px; border-bottom: 1px solid var(--line);
+        }
+        .spots li num { color: var(--blue); font-weight: 900; font-size: 13px; min-width: 30px; }
+        .spots li b { flex: 1; }
+        .spots li span { color: var(--muted); font-size: 13px; max-width: 40ch; text-align: left; }
+
+        /* 收尾 */
+        .end {
+            background: var(--ink); color: var(--white); text-align: center;
+            padding: 110px clamp(28px, 8vw, 120px);
+        }
+        .end .big { font-size: clamp(30px, 6.5vw, 64px); font-weight: 900; text-transform: uppercase; letter-spacing: -0.03em; white-space: nowrap; }
+        .end .big em { color: var(--blue); font-style: normal; }
+        .end p { color: #999; margin: 18px auto 0; max-width: 50ch; font-size: 14px; }
+
+        footer {
+            display: flex; justify-content: space-between; flex-wrap: wrap; gap: 14px;
+            padding: 26px clamp(28px, 8vw, 120px);
+            font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase;
+        }
+
+        @media (max-width: 900px) {
+            body { grid-template-columns: 1fr; }
+            aside { position: static; height: auto; }
+            aside .foot { margin-top: 26px; }
+            .strip { grid-template-columns: repeat(2, 1fr); }
+            .strip .cell:nth-child(2) { grid-column: 1 / -1; }
+        }
+
+        /* ================================================================
+           动效增强 / MOTION & INTERACTION
+           ================================================================ */
+        html.is-loading { overflow: hidden; height: 100%; }
+
+        /* -- 加载动画 -- */
+        .loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--ink); color: var(--white);
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+            transition: transform 0.9s cubic-bezier(.76, 0, .24, 1);
+        }
+        .loader.done { transform: translateY(-101%); }
+        .loader .lc { font-size: clamp(44px, 9vw, 96px); font-weight: 900; letter-spacing: -0.02em; text-transform: uppercase; overflow: hidden; display: flex; }
+        .loader .lc span { display: inline-block; transform: translateY(120%); animation: loadUp .7s cubic-bezier(.16,1,.3,1) forwards; }
+        .loader .lc span:nth-child(1){ animation-delay:.10s } .loader .lc span:nth-child(2){ animation-delay:.18s }
+        .loader .lc span:nth-child(3){ animation-delay:.26s } .loader .lc span:nth-child(4){ animation-delay:.34s }
+        .loader .lc span:nth-child(5){ animation-delay:.42s }
+        @keyframes loadUp { to { transform: translateY(0); } }
+        .loader .pbar { margin-top: 28px; width: min(260px, 60vw); height: 2px; background: #313137; overflow: hidden; }
+        .loader .pbar i { display: block; height: 100%; width: 0; background: var(--blue); animation: loadBar 1.7s cubic-bezier(.16,1,.3,1) forwards; }
+        @keyframes loadBar { from { width: 0 } to { width: 100% } }
+        .loader .hint { margin-top: 20px; font-size: 10px; letter-spacing: 5px; color: #777; text-transform: uppercase; animation: hintGlow 1.6s ease-in-out infinite; }
+        @keyframes hintGlow { 0%,100% { opacity: .4 } 50% { opacity: 1 } }
+
+        /* -- 自定义光标 -- */
+        body { cursor: none; }
+        @media (pointer: coarse) { body { cursor: auto } .cursor, .cursor-ring { display: none !important; } }
+        @media (pointer: fine) { body, body * { cursor: none !important; } }
+        .cursor, .cursor-ring { position: fixed; left: 0; top: 0; pointer-events: none; z-index: 9996; will-change: transform; border-radius: 50%; }
+        .cursor { width: 8px; height: 8px; margin: -4px 0 0 -4px; background: var(--blue); transition: transform .12s; }
+        .cursor.plain { transition: none; }
+        .cursor-ring { width: 40px; height: 40px; margin: -20px 0 0 -20px; border: 1.5px solid rgba(11,77,162,.55); transition: width .35s, height .35s, margin .35s, border-color .35s, background .35s; }
+        .cursor-ring.hover { width: 66px; height: 66px; margin: -33px 0 0 -33px; border-color: var(--blue); background: rgba(11,77,162,.12); }
+        .cursor-ring.down { width: 20px; height: 20px; margin: -10px 0 0 -10px; }
+
+        /* -- 滚动进度条 -- */
+        .scroll-progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: linear-gradient(90deg, var(--blue), #5B8FD6); z-index: 9997; }
+
+        /* -- 滚动渐显 -- */
+        .reveal { opacity: 0; transform: translateY(30px) scale(.985); filter: blur(4px); transition: opacity .8s cubic-bezier(.16,1,.3,1) var(--d, 0s), transform .8s cubic-bezier(.16,1,.3,1) var(--d, 0s), filter .8s cubic-bezier(.16,1,.3,1) var(--d, 0s); will-change: opacity, transform, filter; }
+        .reveal.in { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+
+        /* -- 章节标题逐字弹出 -- */
+        .chapter h2.wchar .c { display: inline-block; opacity: 0; transform: translateY(.55em) scale(.8); transition: opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
+        .chapter h2.wchar.in .c { opacity: 1; transform: none; }
+        .chapter h2.wchar.reveal.in .c { transition-delay: calc(var(--d, 0s) + var(--di, 0s)); }
+
+        /* -- Hero 字母逐跳 -- */
+        .hero .ltr { display: inline-block; opacity: 0; transform: translateY(.55em) rotate(4deg); transition: opacity .75s cubic-bezier(.16,1,.3,1) var(--dl, 0s), transform .75s cubic-bezier(.16,1,.3,1) var(--dl, 0s); }
+        .hero .ltr.on { opacity: 1; transform: none; }
+
+        /* -- Hero 漂浮几何 -- */
+        .f-shape { position: absolute; z-index: 0; pointer-events: none; opacity: .5; border-radius: 2px; }
+        .fs-1 { width: 18px; height: 18px; background: var(--blue); animation: floatA 7s ease-in-out infinite; }
+        .fs-2 { width: 8px; height: 8px; background: var(--red, #E30613); animation: floatB 9s ease-in-out infinite; }
+        .fs-3 { width: 26px; height: 26px; border: 2px solid var(--blue); animation: floatA 11s ease-in-out infinite reverse; }
+        @keyframes floatA { 0%,100% { transform: translate(0,0) rotate(0deg) } 50% { transform: translate(26px,-30px) rotate(90deg) } }
+        @keyframes floatB { 0%,100% { transform: translate(0,0) } 50% { transform: translate(-24px,20px) rotate(-60deg) } }
+
+        /* -- 数据横幅 hover 填充 -- */
+        .strip .cell { position: relative; overflow: hidden; transition: color .35s; }
+        .strip .cell::after { content: ''; position: absolute; inset: 0; background: var(--blue); transform: translateY(102%); transition: transform .5s cubic-bezier(.16,1,.3,1); z-index: 0; }
+        .strip .cell:hover { color: var(--white); }
+        .strip .cell:hover::after { transform: translateY(0); }
+        .strip .cell > * { position: relative; z-index: 1; transition: color .35s; }
+        .strip .cell:nth-child(2):hover::after { background: var(--ink); }
+        .strip .cell:nth-child(2):hover { color: var(--white); }
+
+        /* -- 数据卡 hover -- */
+        .fig { transition: transform .4s cubic-bezier(.16,1,.3,1), box-shadow .4s, border-color .4s; }
+        .fig:hover { transform: translateY(-8px); box-shadow: 0 22px 44px -20px rgba(11,77,162,.45); border-color: var(--blue); }
+        .fig .bignum { transition: transform .3s; }
+        .fig:hover .bignum { transform: scale(1.06); }
+
+        /* -- 景点列表 hover -- */
+        .spots li { position: relative; overflow: hidden; transition: background .35s, padding-left .35s cubic-bezier(.16,1,.3,1); }
+        .spots li::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--blue); transition: width .38s cubic-bezier(.16,1,.3,1); }
+        .spots li:hover { padding-left: 30px; background: var(--white); }
+        .spots li:hover::before { width: 6px; }
+        .spots li num { display: inline-block; transition: transform .5s cubic-bezier(.16,1,.3,1), color .3s; }
+        .spots li:hover num { transform: translateX(-8px) rotate(-15deg); color: var(--blue); }
+        .spots li b { transition: color .3s; }
+        .spots li:hover b { color: var(--blue); }
+
+        /* -- 章节标题下划线 + 角标弹出 -- */
+        .chapter h2 { position: relative; width: fit-content; }
+        .chapter h2::after { content: ''; position: absolute; left: 0; bottom: -3px; height: 3px; width: 0; background: var(--blue); transition: width .45s cubic-bezier(.16,1,.3,1); }
+        .chapter h2:hover::after { width: 100%; }
+        .chapter::before { transition: transform .8s cubic-bezier(.16,1,.3,1), color .8s; }
+        .chapter.in::before { animation: popNum .7s cubic-bezier(.16,1,.3,1) backwards; }
+        @keyframes popNum { from { transform: scale(1.6) rotate(-6deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+
+        /* -- 章节蓝条生长 -- */
+        .chapter .bar { transform: scaleX(0); transform-origin: left; transition: transform 1.1s cubic-bezier(.16,1,.3,1) .25s; }
+        .chapter.in .bar { transform: scaleX(1); }
+
+        /* -- 边栏导航 -- */
+        aside nav a { position: relative; overflow: hidden; }
+        aside nav a::after { content: ''; position: absolute; left: 0; bottom: 5px; height: 1px; width: 100%; background: var(--blue); transform: translateX(-102%); transition: transform .4s cubic-bezier(.16,1,.3,1); }
+        aside nav a:hover::after { transform: translateX(0); }
+        aside nav a.active { color: var(--white); }
+        aside nav a.active::after { transform: translateX(0); background: var(--blue); }
+
+        /* -- 结尾流光 -- */
+        .end .big em { background: linear-gradient(90deg, var(--blue), #6FA3E8, var(--blue)); background-size: 220% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 3.2s linear infinite; }
+        @keyframes shine { to { background-position: 220% center; } }
+        .end { position: relative; overflow: hidden; }
+        .end::before { content: ''; position: absolute; width: 340px; height: 340px; border-radius: 50%; border: 1px solid rgba(11,77,162,.25); left: -120px; top: -120px; animation: spin 18s linear infinite; }
+        .end::after { content: ''; position: absolute; width: 520px; height: 520px; border-radius: 50%; border: 1px dashed rgba(255,255,255,.07); right: -180px; bottom: -220px; animation: spin 26s linear infinite reverse; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* -- 点击涟漪 -- */
+        .ripple { position: fixed; border-radius: 50%; background: radial-gradient(circle, rgba(11,77,162,.22), rgba(11,77,162,0) 70%); transform: scale(0); animation: ripple 0.65s ease-out forwards; pointer-events: none; z-index: 9995; }
+        @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+        /* -- 返回顶部 -- */
+        .to-top { position: fixed; right: 28px; bottom: 28px; width: 54px; height: 54px; border-radius: 50%; border: 0; background: var(--ink); color: #fff; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transform: translateY(16px); transition: opacity .45s, transform .45s, background .3s; z-index: 90; }
+        .to-top.show { opacity: 1; visibility: visible; transform: none; }
+        .to-top:hover { background: var(--blue); }
+        .to-top svg { transition: transform .3s; }
+        .to-top:hover svg { transform: translateY(-3px); }
+
+        /* -- 文本扫光 hover（正文高亮词） -- */
+        .chapter .hl { position: relative; cursor: pointer; transition: color .3s; }
+        .chapter .hl::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--blue); transform: scaleX(0); transform-origin: right; transition: transform .4s cubic-bezier(.16,1,.3,1); }
+        .chapter .hl:hover::after { transform: scaleX(1); transform-origin: left; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 边栏 ===== -->
+    <aside>
+        <div class="logo">MACAU<span>.</span></div>
+        <div class="cname">澳门</div>
+        <div class="rule"></div>
+        <nav>
+            <a href="#basic"><b>01</b> 摸底</a>
+            <a href="#history"><b>02</b> 四百年的宽度</a>
+            <a href="#gov"><b>03</b> 特别的存在</a>
+            <a href="#economy"><b>04</b> 一间屋顶几家店</a>
+            <a href="#row"><b>05</b> 跨过水道</a>
+            <a href="#heritage"><b>06</b> 街巷即展馆</a>
+            <a href="#eat"><b>07</b> 一张嘴的记忆</a>
+        </nav>
+        <div class="foot">
+            CITY DOSSIER / 2026<br>
+            SRC: DSEC · GOV.MO · UNESCO
+        </div>
+    </aside>
+
+    <!-- ===== 主体 ===== -->
+    <main>
+
+        <!-- hero -->
+        <header class="hero">
+            <div class="kicker"><i></i> 城市档案 · 2026</div>
+            <h1>macau</h1>
+            <div class="zh">澳门</div>
+            <p>澳门，中华人民共和国特别行政区，坐在珠江口西侧，北连珠海，东望香港。全城只有<strong>30多平方公里</strong>土地，却装着近<strong>六十九万人</strong>，密度世界数一数二。它也是地球上少有的、出门左转是中式庙宇、右转是西式教堂的地方。</p>
+        </header>
+
+        <!-- 数据横幅 -->
+        <div class="strip">
+            <div class="cell"><div class="n" data-val="33.3" data-unit=" ㎞²">33.3<small>㎞²</small></div><div class="d">城市面积</div></div>
+            <div class="cell"><div class="n" data-val="68.89" data-unit=" 万">68.89<small>万</small></div><div class="d">人口 · 2025年末</div></div>
+            <div class="cell"><div class="n" data-val="4006" data-unit=" 万" data-thousand="1">4,006<small>万</small></div><div class="d">2025年访澳旅客</div></div>
+            <div class="cell"><div class="n" data-val="60.7" data-unit=" 万">60.7<small>万</small></div><div class="d">人均GDP · 澳门元</div></div>
+        </div>
+
+        <!-- 01 摸底 -->
+        <section class="chapter" id="basic" data-no="01">
+            <span class="en">Profile</span>
+            <h2>摸底</h2>
+            <div class="bar"></div>
+            <p class="lead">八百年前这里只是几个渔村，如今是人均GDP排在全球最前列的发达经济体。</p>
+            <p>澳门由澳门半岛、氹仔与路环组成，加上连年填海，总面积约33平方公里。官方语文是中文与葡语，日常以粤语为主，普通话、英语都通用；货币是澳门元，与港元几乎一比一挂钩。这里的街道、政府告示、法律文本仍保留中葡双语并排的传统。</p>
+            <p>2025年底总人口68.89万，其中65岁以上长者占15.3%，而零到十四岁儿童只占11.7%——一座富裕而正在老去的城市，教育、养老正是眼下最热的话题。</p>
+        </section>
+
+        <!-- 02 历史 -->
+        <section class="chapter" id="history" data-no="02">
+            <span class="en">History</span>
+            <h2>四百年的宽度</h2>
+            <div class="bar"></div>
+            <p class="lead">“Macau”这个名字，据说来自妈阁庙。葡萄牙人十六世纪靠岸问路，当地人指着庙说“妈阁”，随口一问一答，竟成了这座城四百年名字的来历。</p>
+            <div class="two">
+                <div>
+                    <p>1553年葡萄牙人登陆，1557年获准定居，澳门从此成为中国与西方之间最早、最持久的窗口——也是清代海禁年代里，印欧之间几乎唯一的对话通道。1594年，远东第一所西式大学圣保禄学院在此开学；1835年一场大火吞噬教堂，仅剩前壁门廊，那便是今天的大三巴牌坊。</p>
+                </div>
+                <div>
+                    <p>往后三百年，澳门在葡治与民间力量的拉扯中缓慢生长。1887年《中葡和好通商条约》坐实了葡方的“永居管理”。1999年12月20日零点，澳门回归祖国，金莲花广场立起中央人民政府赠予的“盛世莲花”。从海边小村到中西十字路口，这一段路，走了四百多年。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 03 治理 -->
+        <section class="chapter" id="gov" data-no="03">
+            <span class="en">Governance</span>
+            <h2>特别的存在</h2>
+            <div class="bar"></div>
+            <p>澳门实行“一国两制”、澳人治澳、高度自治，立法、司法、终审权都在本地。2024年12月20日，第六任行政长官<span class="hl">岑浩辉</span>宣誓就职，把“经济适度多元”写到执政清单的首页。</p>
+            <p>这届政府给自己定了三个方向，官方称“一中心、一平台、一基地”：建设世界旅游休闲中心；担当中国与葡语国家商贸合作服务平台——凭语言牵线葡萄牙、巴西、安哥拉等两亿人口的葡语世界；打造以中华文化为本、多元共融的交流基地。面向2026—2030年，澳门正把“融入大湾区”写进自己的五年规划。</p>
+        </section>
+
+        <!-- 04 经济 -->
+        <section class="chapter" id="economy" data-no="04">
+            <span class="en">Economy</span>
+            <h2>一间屋顶几家店</h2>
+            <div class="bar"></div>
+            <p class="lead">澳门的经济一度简单到只有一个答案：博彩。但它正努力铺开更多桌子。</p>
+            <p>2024年本地生产总值4,033亿澳门元，实质增长8.8%；2025年延续势头，前三季GDP初值3,013亿元、增长4.2%，全年增速预计超过5%。同年访澳旅客首次突破4,000万、全年出入境总人次2.35亿，创历史新高。</p>
+            <p>2002年赌权开放后，这里一度坐上全球博彩收入头把交椅。疫情给了重锤一击，也让澳门铁了心转型：官方定下“1+4”——综合旅游休闲打底，再扶大健康、现代金融、高新科技、会展文体四根新柱子。新一轮博彩牌照承诺十年里为非博彩项目砸下逾千亿，演唱会、展览、美食节一场接一场。</p>
+            <div class="figs">
+                <div class="fig"><div class="bignum" data-val="4033" data-unit="亿" data-thousand="1">4,033亿</div><div class="cap">2024年GDP（澳门元）· +8.8%</div></div>
+                <div class="fig"><div class="bignum" data-val="62.8" data-unit="亿">62.8亿</div><div class="cap">2025年会展带动非博彩收入</div></div>
+                <div class="fig"><div class="bignum" data-prefix="超" data-val="800" data-unit="亿">超800亿</div><div class="cap">2025年访澳旅客总消费</div></div>
+                <div class="fig"><div class="bignum" data-val="2.35" data-unit="亿">2.35亿</div><div class="cap">2025年出入境总人次</div></div>
+            </div>
+        </section>
+
+        <!-- 05 横琴 -->
+        <section class="chapter" id="row" data-no="05">
+            <span class="en">Pearl River</span>
+            <h2>跨过水道</h2>
+            <div class="bar"></div>
+            <div class="two">
+                <div>
+                    <p>澳门太小，装不下全部野心，便把目光投向一水之隔的横琴。2021年，<span class="hl">横琴粤澳深度合作区</span>挂牌，约106平方公里的土地成为澳门真正的第二舞台。</p>
+                    <p>“澳门新街坊”让居民能跨境安家；澳门大学横琴新校区2024年12月奠基、2025年12月动工；中医药等产业按“澳门注册、横琴生产”的模式双向流转。</p>
+                </div>
+                <div>
+                    <p>另一边，2018年通车的港珠澳大桥，把澳门和香港、珠海连进同一个“一小时生活圈”。对许多粤澳两地的人来说，上班、探亲、看演唱会，不过是跨一座桥的距离。</p>
+                    <p>这里也埋着澳门的老本行：中葡经贸合作论坛2003年设立，常设秘书处就在澳门，今年已走到第六届部长级会议——语言，一直是澳门最绵长的红利。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 06 世遗 -->
+        <section class="chapter" id="heritage" data-no="06">
+            <span class="en">Heritage</span>
+            <h2>街巷即展馆</h2>
+            <div class="bar"></div>
+            <p class="lead">2005年，澳门历史城区列入世界遗产：22座建筑、8个“前地”（广场），是中国现存最密集、最完整的近代西式建筑群。</p>
+            <ul class="spots">
+                <li><num>01</num><b>大三巴牌坊</b><span>圣保禄教堂大火后仅存的前壁，最上镜的地标。</span></li>
+                <li><num>02</num><b>议事亭前地</b><span>波状葡式碎石路，两旁粉彩欧式骑楼。</span></li>
+                <li><num>03</num><b>妈阁庙</b><span>约五百年前始建，澳门最古老的庙宇，香火未尽。</span></li>
+                <li><num>04</num><b>东望洋灯塔</b><span>1864年点亮，中国海岸第一座现代灯塔。</span></li>
+                <li><num>05</num><b>大炮台</b><span>俯瞰中区的最佳瞭望台，山顶就是澳门博物馆。</span></li>
+            </ul>
+            <p>这里没有“景区”和“住宅”的界限——世遗街区里，一半是游客，一半是提着菜蓝子的邻里。至于“活的”文化，要数盛事：1954年创赛的澳门格兰披治大赛车，每年11月把闹市街路圈成赛道，风驰电掣六十多年；2017年，澳门又拿下“创意城市美食之都”的名号。</p>
+        </section>
+
+        <!-- 07 美食 -->
+        <section class="chapter" id="eat" data-no="07">
+            <span class="en">Taste</span>
+            <h2>一张嘴的记忆</h2>
+            <div class="bar"></div>
+            <p class="lead">如果只留一个来澳门的理由，多半是一张好吃的嘴。</p>
+            <div class="two">
+                <div>
+                    <p>焦脆起层的葡式蛋挞、现烤现卖的猪扒包、深夜咖喱牛杂、韭黄水蟹粥——从路环的小店到官也街的手信铺，这些是游客的功课；本地人的清晨，则从茶楼的一盅两件开始。</p>
+                </div>
+                <div>
+                    <p>而真正只属于澳门的，是四百多年葡、中、马来饮食碰撞出来的<span class="hl">土生葡菜</span>：葡国鸡、非洲鸡、马介休球。它既不是葡萄牙菜也不是粤菜，只有在这里才吃得到。2025年，澳门还成了“演唱会之都”，世界女排联赛、国际烟花汇演接二连三——玩，也成了它新的招牌。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 收尾 -->
+        <div class="end">
+            <div class="big">小小地方，<em>大大世界</em></div>
+            <p>澳门小到用脚就能逛完，大到装下四百年的相遇。剩下的篇幅，留给你亲自开头。</p>
+        </div>
+
+        <footer>
+            <span>关于澳门 / Macau Dossier</span>
+            <span>数据来源 · 统计暨普查局 · 特区政府新闻局 · UNESCO</span>
+            <span>编辑于 2026</span>
+        </footer>
+
+    </main>
+
+    <script>
+        (() => {
+            'use strict';
+            const doc = document.documentElement;
+            const fine = window.matchMedia('(pointer: fine)').matches;
+
+            /* ---------- 1. 加载动画 ---------- */
+            doc.classList.add('is-loading');
+            const loader = document.createElement('div');
+            loader.className = 'loader';
+            loader.innerHTML =
+                '<div class="lc">MACAU</div><div class="pbar"><i></i></div><div class="hint">LOADING · 2026</div>';
+            loader.querySelector('.lc').innerHTML = 'MACAU'.split('').map(c => `<span>${c}</span>`).join('');
+            document.body.prepend(loader);
+            const finishLoader = () => {
+                loader.classList.add('done');
+                doc.classList.remove('is-loading');
+                document.querySelectorAll('.hero .ltr').forEach(s => s.classList.add('on'));
+            };
+            window.addEventListener('load', () => setTimeout(finishLoader, 900));
+            setTimeout(finishLoader, 4200); /* 兜底 */
+
+            /* ---------- 2. 自定义光标 ---------- */
+            if (fine) {
+                const dot = document.createElement('div');
+                dot.className = 'cursor';
+                const ring = document.createElement('div');
+                ring.className = 'cursor-ring';
+                document.body.append(dot, ring);
+                let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+                window.addEventListener('mousemove', e => {
+                    mx = e.clientX; my = e.clientY;
+                    dot.style.transform = `translate(${mx}px,${my}px)`;
+                });
+                (function ringLoop() {
+                    rx += (mx - rx) * 0.16; ry += (my - ry) * 0.16;
+                    ring.style.transform = `translate(${rx}px,${ry}px)`;
+                    requestAnimationFrame(ringLoop);
+                })();
+                const hovSel = 'a, button, .fig, .strip .cell, .spots li, .to-top, .chapter .hl';
+                document.addEventListener('mouseover', e => {
+                    if (e.target.closest(hovSel)) { ring.classList.add('hover'); dot.style.background = '#E30613'; }
+                });
+                document.addEventListener('mouseout', e => {
+                    if (e.target.closest(hovSel)) { ring.classList.remove('hover'); dot.style.background = ''; }
+                });
+                document.addEventListener('mousedown', () => ring.classList.add('down'));
+                document.addEventListener('mouseup', () => ring.classList.remove('down'));
+            }
+
+            /* ---------- 3. 滚动进度条 ---------- */
+            const prog = document.createElement('div');
+            prog.className = 'scroll-progress';
+            document.body.appendChild(prog);
+            const updateProg = () => {
+                const h = doc.scrollHeight - innerHeight;
+                prog.style.width = (h > 0 ? (scrollY / h * 100) : 0) + '%';
+            };
+            addEventListener('scroll', updateProg, { passive: true });
+            updateProg();
+
+            /* ---------- 4. Hero 字母逐跳 + 漂浮几何 ---------- */
+            const h1 = document.querySelector('.hero h1');
+            if (h1) h1.innerHTML = h1.textContent.trim().split('').map((c, i) => `<span class="ltr" style="--dl:${(i * .05).toFixed(2)}s">${c}</span>`).join('');
+            const zh = document.querySelector('.hero .zh');
+            if (zh) zh.innerHTML = [...zh.textContent.trim()].map((c, i) => `<span class="ltr" style="--dl:${(.4 + i * .14).toFixed(2)}s">${c}</span>`).join('');
+            const hero = document.querySelector('.hero');
+            if (hero) {
+                const shapes = [
+                    { cls: 'f-shape fs-1', t: '18%', l: '62%' },
+                    { cls: 'f-shape fs-2', t: '64%', l: '78%' },
+                    { cls: 'f-shape fs-3', t: '30%', l: '40%' }
+                ];
+                shapes.forEach(s => {
+                    const el = document.createElement('i');
+                    el.className = s.cls;
+                    el.style.top = s.t; el.style.left = s.l;
+                    hero.appendChild(el);
+                });
+                /* Hero 视差（整像素位移，避免亚像素导致的文本模糊） */
+                let vx = 0, vy = 0, lastX = 0, lastY = 0;
+                addEventListener('mousemove', e => {
+                    vx = e.clientX / innerWidth - .5;
+                    vy = e.clientY / innerHeight - .5;
+                });
+                (function par() {
+                    if (!doc.classList.contains('is-loading')) {
+                        const nx = Math.round(vx * -14);
+                        const ny = Math.round(vy * -10);
+                        if (nx !== lastX || ny !== lastY) {
+                            hero.style.transform = `translate3d(${nx || 0}px,${ny || 0}px,0)`;
+                            lastX = nx; lastY = ny;
+                        }
+                    }
+                    requestAnimationFrame(par);
+                })();
+            }
+
+            /* ---------- 5. 滚动渐显（含章节内交错 + 标题逐字） ---------- */
+            document.querySelectorAll('.chapter').forEach(ch => {
+                let d = 0;
+                const els = ch.querySelectorAll('.en, h2, .chapter > p, .two > div, .spots, .figs');
+                els.forEach(el => {
+                    if (el.tagName === 'H2') {
+                        const txt = el.textContent.replace(/\s+/g, '').split('');
+                        el.innerHTML = txt.map(c => `<span class="c" style="--di:${(txt.indexOf(c) * .03).toFixed(2)}s">${c}</span>`).join('');
+                        el.classList.add('wchar');
+                    }
+                    el.classList.add('reveal');
+                    el.style.setProperty('--d', (d).toFixed(2) + 's');
+                    d += .08;
+                });
+            });
+            const heroIntro = document.querySelector('.hero p');
+            if (heroIntro) { heroIntro.classList.add('reveal'); heroIntro.style.setProperty('--d', '.5s'); }
+            const revealIO = new IntersectionObserver(es => {
+                es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revealIO.unobserve(e.target); } });
+            }, { threshold: .12 });
+            document.querySelectorAll('.reveal').forEach(el => revealIO.observe(el));
+
+            /* ---------- 6. 章节角标弹出（chapter 进入视口） ---------- */
+            const chapIO = new IntersectionObserver(es => {
+                es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); chapIO.unobserve(e.target); } });
+            }, { threshold: .18 });
+            document.querySelectorAll('.chapter').forEach(c => chapIO.observe(c));
+
+            /* ---------- 7. 数字滚动计数 ---------- */
+            const countUp = el => {
+                const target = parseFloat(el.dataset.val);
+                const raw = String(el.dataset.val);
+                const dec = raw.includes('.') ? raw.split('.')[1].length : 0;
+                const unit = el.dataset.unit || '', prefix = el.dataset.prefix || '', sep = el.dataset.thousand === '1';
+                const dur = 1500, t0 = performance.now();
+                const fmt = n => {
+                    const s = n.toFixed(dec);
+                    return sep ? Number(s).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) : s;
+                };
+                (function tick(now) {
+                    const p = Math.min((now - t0) / dur, 1);
+                    const ease = 1 - Math.pow(1 - p, 3);
+                    el.innerHTML = prefix + fmt(target * ease) + (unit ? `<small>${unit}</small>` : '');
+                    if (p < 1) requestAnimationFrame(tick);
+                })(t0);
+            };
+            const countIO = new IntersectionObserver((es, o) => {
+                es.forEach(e => {
+                    if (e.isIntersecting) {
+                        e.target.querySelectorAll('[data-val]').forEach(countUp);
+                        o.unobserve(e.target);
+                    }
+                });
+            }, { threshold: .4 });
+            document.querySelectorAll('.strip, .figs').forEach(el => countIO.observe(el));
+
+            /* ---------- 8. 侧边栏滚动监听（激活当前章节） ---------- */
+            const navA = document.querySelectorAll('aside nav a');
+            const spyIO = new IntersectionObserver(es => {
+                es.forEach(e => {
+                    if (e.isIntersecting) {
+                        navA.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+                    }
+                });
+            }, { rootMargin: '-45% 0px -45% 0px' });
+            document.querySelectorAll('.chapter').forEach(c => spyIO.observe(c));
+
+            /* ---------- 9. 导航磁吸 ---------- */
+            if (fine) {
+                document.querySelectorAll('aside nav a').forEach(a => {
+                    a.addEventListener('mousemove', e => {
+                        const r = a.getBoundingClientRect();
+                        const x = e.clientX - r.left - r.width / 2;
+                        const y = e.clientY - r.top - r.height / 2;
+                        a.style.transform = `translate(${(x * .25).toFixed(1)}px,${(y * .25).toFixed(1)}px)`;
+                        a.style.transition = 'transform .1s';
+                    });
+                    a.addEventListener('mouseleave', () => {
+                        a.style.transition = 'transform .5s cubic-bezier(.16,1,.3,1)';
+                        a.style.transform = '';
+                    });
+                });
+            }
+
+            /* ---------- 10. 全局点击涟漪 ---------- */
+            document.addEventListener('click', e => {
+                const r = document.createElement('span');
+                r.className = 'ripple';
+                const d = Math.max(innerWidth, innerHeight) * 1.1;
+                r.style.width = r.style.height = d + 'px';
+                r.style.left = (e.clientX - d / 2) + 'px';
+                r.style.top = (e.clientY - d / 2) + 'px';
+                document.body.appendChild(r);
+                setTimeout(() => r.remove(), 700);
+            });
+
+            /* ---------- 11. 返回顶部 ---------- */
+            const tt = document.createElement('button');
+            tt.className = 'to-top';
+            tt.setAttribute('aria-label', '回到顶部');
+            tt.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 19V5M5 12l7-7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            document.body.appendChild(tt);
+            addEventListener('scroll', () => tt.classList.toggle('show', scrollY > 600), { passive: true });
+            tt.addEventListener('click', () => scrollTo({ top: 0, behavior: 'smooth' }));
+        })();
+    </script>
+</body>
+</html>
