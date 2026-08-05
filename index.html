@@ -22,6 +22,7 @@
 
     html, body {
       min-height: 100%;
+      width: 100%;
       height: 100%;
       overflow: hidden;
     }
@@ -33,9 +34,12 @@
     }
 
     .page {
+      position: fixed;
+      inset: 0;
       display: grid;
       grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-      height: 100vh;
+      width: 100%;
+      height: 100dvh;
       min-height: 0;
       overflow: hidden;
     }
@@ -50,6 +54,8 @@
       flex-direction: column;
       justify-content: space-between;
       min-height: 0;
+      overflow: hidden;
+      overscroll-behavior: none;
       background: var(--intro-bg);
     }
 
@@ -104,9 +110,7 @@
       display: flex;
       flex-direction: column;
       min-height: 0;
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      scrollbar-gutter: stable;
+      overflow: hidden;
       background: var(--entry-bg);
       color: var(--entry-ink);
     }
@@ -123,8 +127,14 @@
 
     .document-list {
       display: grid;
+      flex: 0 1 calc(3 * 142px);
+      max-height: calc(3 * 142px);
+      min-height: 0;
       gap: 0;
       margin: auto 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
       border-top: 1px solid var(--entry-line);
     }
 
@@ -215,6 +225,8 @@
       .document-city { font-size: 27px; }
 
       .document-link { min-height: 130px; }
+
+      .document-list { max-height: calc(3 * 130px); }
     }
   </style>
 </head>
